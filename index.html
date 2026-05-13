@@ -119,12 +119,9 @@
         .tech-pill span { cursor: pointer; color: #fc8181; font-weight: bold; font-size: 14px; line-height: 1; }
         .tech-pill span:hover { color: #e53e3e; }
 
-        /* Estilos del Dropdown personalizado para Técnicos */
-        .select-items label:hover { background-color: #edf2f7; }
-
         .document-header { font-size: 1.4em; font-weight: 800; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
         
-        .avion-section { margin-bottom: 40px; }
+        .avion-section { margin-bottom: 30px; }
 
         .avion-title {
             font-size: 1.2em;
@@ -158,29 +155,26 @@
             border: 1px solid transparent;
         }
 
-        /* Bloques de Agregar Integrados */
-        .inline-add-row {
-            background-color: #f8fafc;
-            border: 1px dashed #cbd5e0;
-            padding: 12px;
-            border-radius: 6px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-            margin-top: 5px;
+        /* Respiración Inteligente (Rápida y con resplandor) */
+        @keyframes breathePriority { 
+            0% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
+            50% { box-shadow: inset 4px 0 0 var(--danger), 0 0 15px rgba(229,62,62,0.4); background-color: #ffffff; } 
+            100% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
+        }
+        @keyframes breatheHelp { 
+            0% { box-shadow: inset 4px 0 0 var(--help), 0 0 5px rgba(221,107,32,0.1); background-color: #fffaf0; } 
+            50% { box-shadow: inset 4px 0 0 var(--help), 0 0 15px rgba(221,107,32,0.4); background-color: #ffffff; } 
+            100% { box-shadow: inset 4px 0 0 var(--help), 0 0 5px rgba(221,107,32,0.1); background-color: #fffaf0; } 
+        }
+        @keyframes breatheBoth { 
+            0% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
+            50% { box-shadow: inset 4px 0 0 var(--help), 0 0 15px rgba(221,107,32,0.4); background-color: #fffaf0; } 
+            100% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
         }
 
-        .inline-add-row.avion-add { margin-top: 20px; background-color: #f0f4f8; border-color: var(--leader-color); }
-        .inline-add-title { width: 100%; font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: -5px; }
-
-        @keyframes breathePriority { 0% { background-color: #fff5f5; border-left-color: var(--danger); } 50% { background-color: #ffffff; border-left-color: #fed7d7; } 100% { background-color: #fff5f5; border-left-color: var(--danger); } }
-        @keyframes breatheHelp { 0% { background-color: #fffaf0; border-left-color: var(--help); } 50% { background-color: #ffffff; border-left-color: #feebc8; } 100% { background-color: #fffaf0; border-left-color: var(--help); } }
-        @keyframes breatheBoth { 0% { background-color: #fff5f5; border-left-color: var(--danger); } 50% { background-color: #fffaf0; border-left-color: var(--help); } 100% { background-color: #fff5f5; border-left-color: var(--danger); } }
-
-        .task-item.priority { animation: breathePriority 2.5s infinite ease-in-out; border-left: 4px solid var(--danger); }
-        .task-item.help-needed { animation: breatheHelp 2.5s infinite ease-in-out; border-left: 4px solid var(--help); }
-        .task-item.priority.help-needed { animation: breatheBoth 2.5s infinite ease-in-out; border-left: 4px solid var(--danger); }
+        .task-item.priority { animation: breathePriority 1.5s infinite ease-in-out; border-left: none; }
+        .task-item.help-needed { animation: breatheHelp 1.5s infinite ease-in-out; border-left: none; }
+        .task-item.priority.help-needed { animation: breatheBoth 1.5s infinite ease-in-out; border-left: none; }
 
         .priority-badge { color: var(--danger); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
         .help-badge { color: var(--help); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
@@ -194,7 +188,7 @@
         }
 
         .task-item.completed .status-toggle { background-color: var(--accent); border-color: var(--accent); color: white; }
-        .task-item.completed { animation: none !important; border-left-color: transparent !important; background-color: transparent !important; }
+        .task-item.completed { animation: none !important; box-shadow: inset 4px 0 0 transparent !important; background-color: transparent !important; }
         .task-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .task-info { width: 100%; transition: all 0.3s ease; }
         .task-item.completed .task-info { opacity: 0.5; text-decoration: line-through; }
@@ -208,7 +202,6 @@
         .leader-btns { display: flex; flex-wrap: wrap; gap: 6px; }
 
         .small-btn { padding: 4px 10px; font-size: 11px; border-radius: 3px; background: none; }
-        .delete-btn { color: var(--danger); border: 1px solid var(--danger); }
         .edit-btn { color: var(--leader-color); border: 1px solid var(--leader-color); font-weight: bold; }
         .priority-btn { color: var(--danger); border: 1px solid var(--danger); font-weight: bold; }
         .comment-btn { color: var(--comment); border: 1px solid var(--comment); }
@@ -218,21 +211,28 @@
         /* Modal Styles */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(47, 62, 70, 0.6);
+            background-color: rgba(47, 62, 70, 0.7); backdrop-filter: blur(2px);
         }
         .modal-content {
-            background-color: var(--bg); margin: 10% auto; padding: 20px;
-            border: 1px solid var(--border); width: 90%; max-width: 450px; border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: var(--bg); margin: 5% auto; padding: 20px;
+            border: 1px solid var(--border); width: 90%; max-width: 500px; border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        .modal-header { font-weight: bold; font-size: 1.2em; margin-bottom: 15px; color: var(--primary); }
-        .modal-content input { width: 100%; margin-bottom: 12px; box-sizing: border-box; }
+        .modal-header { font-weight: bold; font-size: 1.2em; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--leader-color); padding-bottom: 8px;}
+        .modal-content input, .modal-content select { width: 100%; margin-bottom: 12px; box-sizing: border-box; }
+        
+        .modal-row { display: flex; gap: 10px; }
+        .modal-row > * { flex: 1; }
+
         .tech-list-modal {
             border: 1px solid var(--border); padding: 10px; border-radius: 4px; 
             max-height: 150px; overflow-y: auto; margin-bottom: 15px; background: #f8fafc;
         }
         .tech-list-modal label { display: block; margin-bottom: 8px; font-size: 13px; cursor: pointer; font-weight: 600; color: #4a5568; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .tech-list-modal label:hover { color: var(--primary); }
+        
+        .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .modal-actions-right { display: flex; gap: 10px; }
 
         @media print {
             @page { size: letter; margin: 1cm; }
@@ -242,7 +242,7 @@
             .avion-section { margin-bottom: 20px; }
             .avion-title { font-size: 1.1em; margin-bottom: 8px; padding: 6px; flex-direction: column; align-items: flex-start; border-left: 2px solid var(--primary); }
             .avion-pos, .avion-times { padding: 0; background: none; border-radius: 0; }
-            .task-item { margin-bottom: 6px; padding: 0px 5px; border: none; animation: none !important; background: none !important; }
+            .task-item { margin-bottom: 6px; padding: 0px 5px; border: none; animation: none !important; background: none !important; box-shadow: none !important; }
             .task-item.completed .task-info { opacity: 0.85 !important; text-decoration: line-through; color: #333; }
             .task-item.completed .status-toggle { -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: var(--accent) !important; border-color: var(--accent) !important; color: white !important; }
             .tango-link { text-decoration: none; color: black; }
@@ -258,7 +258,7 @@
         <button class="btn-top" onclick="window.print()" style="background-color: #718096;">🖨️ IMPRIMIR / PDF</button>
     </div>
 
-    <!-- CONFIGURACIÓN DE TURNO (Solo visible para Leader) -->
+    <!-- CONFIGURACIÓN DE TURNO -->
     <div class="header-controls leader-only no-print">
         <div class="control-group">
             <strong>AJUSTES DE TURNO:</strong>
@@ -276,15 +276,88 @@
             <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
             <button class="btn-clear" onclick="clearAllData()" style="margin-left: auto;">🗑️ BORRAR HOJA ENTERA</button>
         </div>
-        <div class="control-group" id="tech-pills-container" style="gap: 8px; margin-top: 10px;">
-            <!-- Aquí aparecen los técnicos agregados -->
-        </div>
+        <div class="control-group" id="tech-pills-container" style="gap: 8px; margin-top: 10px;"></div>
     </div>
 
-    <!-- ÁREA DE IMPRESIÓN Y CONTENIDO PRINCIPAL -->
+    <!-- ÁREA PRINCIPAL -->
     <div id="print-area">
         <div class="document-header" id="display-header"></div>
         <div id="aviones-container"></div>
+        <div class="leader-only no-print" style="margin-top: 20px;">
+            <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 12px;">+ AGREGAR NUEVO AVIÓN A LA HOJA</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- Modal Agregar Avión -->
+<div id="add-avion-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">✈️ AGREGAR NUEVO AVIÓN</div>
+        <input type="text" id="add-ac-reg" placeholder="MATRÍCULA (EJ: CC-BGM)" maxlength="6" oninput="formatMatricula(this)">
+        <div class="modal-row">
+            <input type="text" id="add-ac-wp" placeholder="WP (T00...)" maxlength="8">
+            <input type="text" id="add-ac-pos" placeholder="POSICIÓN">
+        </div>
+        <div class="modal-row">
+            <input type="time" id="add-ac-start" title="Inicio">
+            <input type="time" id="add-ac-end" title="Término">
+        </div>
+        <input type="text" id="add-ac-comment" placeholder="NOTA DEL AVIÓN (OPCIONAL)">
+        
+        <div class="modal-actions">
+            <div></div> <!-- Spacer -->
+            <div class="modal-actions-right">
+                <button class="btn-outline" onclick="closeModal('add-avion-modal')">CANCELAR</button>
+                <button class="btn-leader" onclick="saveAddAvion()">GUARDAR AVIÓN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Avión -->
+<div id="edit-avion-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">✏️ EDITAR AVIÓN</div>
+        <input type="text" id="edit-ac-reg" placeholder="MATRÍCULA" maxlength="6" oninput="formatMatricula(this)">
+        <div class="modal-row">
+            <input type="text" id="edit-ac-wp" placeholder="WP (T00...)" maxlength="8">
+            <input type="text" id="edit-ac-pos" placeholder="POSICIÓN">
+        </div>
+        <div class="modal-row">
+            <input type="time" id="edit-ac-start" title="Inicio">
+            <input type="time" id="edit-ac-end" title="Término">
+        </div>
+        <input type="text" id="edit-ac-comment" placeholder="NOTA DEL AVIÓN (OPCIONAL)">
+        
+        <div class="modal-actions">
+            <button class="btn-clear" onclick="confirmDeleteAvion()">ELIMINAR AVIÓN</button>
+            <div class="modal-actions-right">
+                <button class="btn-outline" onclick="closeModal('edit-avion-modal')">CANCELAR</button>
+                <button class="btn-leader" onclick="saveEditAvion()">GUARDAR CAMBIOS</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Tarea -->
+<div id="add-task-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">📝 AGREGAR TAREA</div>
+        <input type="text" id="add-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA" oninput="detectTangoModal(this, 'add-task-tango')">
+        <input type="text" id="add-task-tango" placeholder="TANGO (8 CARACT.)" maxlength="8">
+        
+        <div style="font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: 5px;">ASIGNAR TÉCNICOS:</div>
+        <div class="tech-list-modal" id="add-task-techs"></div>
+        
+        <div class="modal-actions">
+            <div></div> <!-- Spacer -->
+            <div class="modal-actions-right">
+                <button class="btn-outline" onclick="closeModal('add-task-modal')">CANCELAR</button>
+                <button class="btn-leader" onclick="saveAddTask()">GUARDAR TAREA</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -292,17 +365,18 @@
 <div id="edit-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ EDITAR TAREA</div>
-        <input type="text" id="edit-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA">
+        <input type="text" id="edit-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA" oninput="detectTangoModal(this, 'edit-task-tango')">
         <input type="text" id="edit-task-tango" placeholder="TANGO (8 CARACT.)" maxlength="8">
         
         <div style="font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: 5px;">TÉCNICOS ASIGNADOS:</div>
-        <div class="tech-list-modal" id="edit-task-techs">
-            <!-- Checkboxes generados dinámicamente -->
-        </div>
+        <div class="tech-list-modal" id="edit-task-techs"></div>
         
         <div class="modal-actions">
-            <button class="btn-clear" onclick="closeEditModal()" style="width: auto;">CANCELAR</button>
-            <button class="btn-leader" onclick="saveEditTask()" style="width: auto;">GUARDAR CAMBIOS</button>
+            <button class="btn-clear" onclick="confirmDeleteTask()">ELIMINAR TAREA</button>
+            <div class="modal-actions-right">
+                <button class="btn-outline" onclick="closeModal('edit-task-modal')">CANCELAR</button>
+                <button class="btn-leader" onclick="saveEditTask()">GUARDAR CAMBIOS</button>
+            </div>
         </div>
     </div>
 </div>
@@ -325,7 +399,7 @@
     updateHeader();
 
     // ==========================================
-    // LÓGICA DE TÉCNICOS EN TURNO
+    // LÓGICA GENERAL Y TÉCNICOS
     // ==========================================
     function addTech() {
         const input = document.getElementById('in-new-tech');
@@ -336,13 +410,13 @@
         shiftTechs.push(name);
         shiftTechs.sort(); 
         input.value = '';
-        saveTechs(); renderTechPills(); render(); // Re-render actualiza los dropdowns
+        saveTechs(); renderTechPills();
     }
 
     function removeTech(index) {
         if (!confirm(`¿CONFIRMAS ELIMINAR A ${shiftTechs[index]} DE LA LISTA DE TÉCNICOS PRESENTES?`)) return;
         shiftTechs.splice(index, 1);
-        saveTechs(); renderTechPills(); render(); // Re-render actualiza los dropdowns
+        saveTechs(); renderTechPills();
     }
 
     function saveTechs() { localStorage.setItem(KEY_TECHS, JSON.stringify(shiftTechs)); }
@@ -358,34 +432,6 @@
         });
     }
 
-    // Funciones del Autocomplete convertidas a Dropdown con Checkbox
-    function toggleTechDropdown(id, event) {
-        if(event) event.stopPropagation();
-        const dropdown = document.getElementById(`tech-dropdown-${id}`);
-        const isVisible = dropdown.style.display === 'block';
-        document.querySelectorAll('.select-items').forEach(el => el.style.display = 'none');
-        if (!isVisible) dropdown.style.display = 'block';
-    }
-
-    function updateTechDisplay(id) {
-        const checkboxes = document.querySelectorAll(`.tech-cb-${id}:checked`);
-        const display = document.getElementById(`tech-display-text-${id}`);
-        let selected = Array.from(checkboxes).map(cb => cb.value);
-        if(selected.length > 0) {
-            display.innerText = selected.join(' - ');
-        } else {
-            display.innerText = 'SELECCIONAR TÉCNICOS';
-        }
-    }
-
-    document.addEventListener("click", function (e) {
-        if (!e.target.closest('.tech-dropdown-container')) {
-            document.querySelectorAll('.select-items').forEach(el => el.style.display = 'none');
-        }
-    });
-
-    // ==========================================
-
     function toggleMode() {
         isTeamLeader = !isTeamLeader;
         const body = document.body;
@@ -400,7 +446,7 @@
             btnToggle.innerText = "MODO TÉCNICO";
             btnToggle.style.backgroundColor = "var(--accent)";
         }
-        render(); // Re-render para mostrar/ocultar los formularios integrados
+        render(); 
     }
 
     function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(avionesData)); }
@@ -449,83 +495,30 @@
         document.getElementById('display-header').innerText = `${turno} ${fecha} ${jefe ? '- ' + jefe : ''}`;
     }
 
+    // ==========================================
+    // UTILS & RENDER
+    // ==========================================
     function formatMatricula(input) {
         let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); 
         if (val.length > 2) input.value = val.substring(0, 2) + '-' + val.substring(2, 5);
         else input.value = val;
     }
 
-    function detectTango(input, avionId) {
+    function detectTangoModal(input, targetId) {
         const text = input.value.toUpperCase();
         const regex = /\bT00[A-Z0-9]{5}\b/g; 
         const matches = text.match(regex);
         if (matches && matches.length > 0) {
-            document.getElementById(`in-task-tango-${avionId}`).value = matches[matches.length - 1];
+            document.getElementById(targetId).value = matches[matches.length - 1];
         }
-    }
-
-    // Funciones en la misma hoja
-    function addAvionInline() {
-        let reg = document.getElementById('in-new-ac-reg').value.toUpperCase().trim();
-        let wp = document.getElementById('in-new-ac-wp').value.toUpperCase().trim();
-        const pos = document.getElementById('in-new-ac-pos').value.toUpperCase().trim();
-        const start = document.getElementById('in-new-ac-start').value;
-        const end = document.getElementById('in-new-ac-end').value;
-        const comment = document.getElementById('in-new-ac-comment').value.toUpperCase().trim();
-        
-        if (!reg || reg.length !== 6) return alert("LA MATRÍCULA DEBE ESTAR COMPLETA (EJ: CC-BGM)");
-
-        if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
-        if (wp && wp.length !== 8) return alert("EL WP DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
-
-        const existingAvion = avionesData.find(a => a.reg === reg);
-        if (existingAvion) {
-            if (wp) existingAvion.wp = wp;
-            if (pos) existingAvion.pos = pos;
-            if (start) existingAvion.start = start;
-            if (end) existingAvion.end = end;
-            if (comment) existingAvion.comment = comment;
-            alert("¡AVIÓN ACTUALIZADO!");
-        } else {
-            avionesData.push({ id: Date.now(), reg, wp, pos, start, end, comment, tareas: [] });
-        }
-
-        saveData(); render();
-    }
-
-    function addTaskInline(avionId) {
-        const desc = document.getElementById(`in-task-desc-${avionId}`).value.trim().toUpperCase();
-        let tango = document.getElementById(`in-task-tango-${avionId}`).value.toUpperCase().trim();
-        
-        // Obtener los técnicos marcados en el dropdown
-        const checkboxes = document.querySelectorAll(`.tech-cb-${avionId}:checked`);
-        let techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
-
-        if (!desc) return alert("INGRESE LA DESCRIPCIÓN DE LA TAREA.");
-        
-        if (tango.length === 5 && !tango.startsWith('T00')) tango = 'T00' + tango;
-        if (tango && tango.length !== 8) return alert("EL TANGO DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
-
-        const avion = avionesData.find(a => a.id == avionId);
-
-        if (tango) {
-            const existingTask = avion.tareas.find(t => t.tango === tango);
-            if (existingTask) {
-                existingTask.desc = desc; 
-                if (techs) existingTask.techs = techs; 
-                alert("¡TAREA ACTUALIZADA! ESTE TANGO YA EXISTÍA EN ESTE AVIÓN.");
-                saveData(); render(); return;
-            }
-        }
-
-        avion.tareas.push({ id: Date.now(), desc, tango, techs, done: false, priority: false, help: false, comment: "" });
-        saveData(); render();
     }
 
     async function handleTangoClick(tangoCode) {
         try { await navigator.clipboard.writeText(tangoCode); window.open(MAINTENIX_URL, '_blank'); } 
         catch (err) { console.error('ERROR AL COPIAR:', err); }
     }
+
+    function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
     function render() {
         const container = document.getElementById('aviones-container');
@@ -549,8 +542,7 @@
                     <div class="action-btns no-print" style="margin-left: auto; margin-top: 0;">
                         <button class="small-btn comment-btn" onclick="editAvionComment(${avion.id})">${avionCommentBtnText}</button>
                         <div class="leader-btns leader-only">
-                            <button class="small-btn edit-btn" onclick="editAvionFull(${avion.id})">✏️ EDITAR AVIÓN</button>
-                            <button class="small-btn delete-btn" onclick="deleteAvion(${avion.id})">ELIMINAR</button>
+                            <button class="small-btn edit-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR AVIÓN</button>
                         </div>
                     </div>
                 </div>
@@ -583,8 +575,7 @@
                                 <button class="small-btn comment-btn" onclick="editTaskComment(${avion.id}, ${t.id})">${taskCommentBtnText}</button>
                                 <div class="leader-btns leader-only">
                                     <button class="small-btn priority-btn" onclick="togglePriority(${avion.id}, ${t.id})">⭐ URGENTE</button>
-                                    <button class="small-btn edit-btn" onclick="editTaskFull(${avion.id}, ${t.id})">✏️ EDITAR</button>
-                                    <button class="small-btn delete-btn" onclick="deleteTask(${avion.id}, ${t.id})">X</button>
+                                    <button class="small-btn edit-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR TAREA</button>
                                 </div>
                             </div>
                         </div>
@@ -592,39 +583,10 @@
                 `;
             });
 
-            // Formulario EN LA MISMA HOJA para agregar tarea a este avión
             if (isTeamLeader) {
-                // Generar checkboxes para los técnicos actuales
-                let techCheckboxes = '';
-                if (shiftTechs.length === 0) {
-                    techCheckboxes = '<div style="padding: 8px 10px; font-size:11px; color:var(--comment);">NO HAY TÉCNICOS AGREGADOS</div>';
-                } else {
-                    shiftTechs.forEach(tech => {
-                        techCheckboxes += `
-                            <label style="display:block; padding: 6px 10px; cursor:pointer; font-size:12px; margin:0; border-bottom:1px solid var(--border);">
-                                <input type="checkbox" class="tech-cb-${avion.id}" value="${tech}" onchange="updateTechDisplay(${avion.id})" style="margin-right:6px;"> ${tech}
-                            </label>
-                        `;
-                    });
-                }
-
                 html += `
-                    <div class="inline-add-row no-print">
-                        <div class="inline-add-title">AGREGAR TAREA A ${avion.reg}</div>
-                        <input type="text" id="in-task-desc-${avion.id}" placeholder="DESCRIPCIÓN DE LA TAREA" oninput="detectTango(this, ${avion.id})" style="flex: 2; min-width: 200px;">
-                        <input type="text" id="in-task-tango-${avion.id}" placeholder="TANGO (8 CARAC.)" maxlength="8" style="width: 120px;">
-                        
-                        <div style="position: relative; flex: 1.5; min-width: 150px;" class="tech-dropdown-container">
-                            <div id="tech-display-${avion.id}" class="select-selected" onclick="toggleTechDropdown(${avion.id}, event)" style="border: 1px solid var(--border); padding: 8px 10px; border-radius: 4px; font-size: 13px; background: white; cursor: pointer; display: flex; align-items: center; justify-content: space-between; min-height: 19px;">
-                                <span id="tech-display-text-${avion.id}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width:90%;">SELECCIONAR TÉCNICOS</span>
-                                <span style="font-size: 10px; color:var(--comment);">▼</span>
-                            </div>
-                            <div id="tech-dropdown-${avion.id}" class="select-items" style="display: none; position: absolute; border: 1px solid var(--border); border-top: none; background: white; z-index: 99; top: 100%; left: 0; right: 0; max-height: 150px; overflow-y: auto; box-shadow: 0px 4px 6px rgba(0,0,0,0.1); border-radius: 0 0 4px 4px;">
-                                ${techCheckboxes}
-                            </div>
-                        </div>
-
-                        <button class="btn-leader" onclick="addTaskInline(${avion.id})">+ TAREA</button>
+                    <div class="leader-only no-print" style="margin-left: 44px; margin-top: 5px;">
+                        <button class="small-btn btn-leader" onclick="openAddTaskModal(${avion.id})" style="padding: 6px 12px;">+ AGREGAR TAREA</button>
                     </div>
                 `;
             }
@@ -632,26 +594,11 @@
             div.innerHTML = html;
             container.appendChild(div);
         });
-
-        // Formulario EN LA MISMA HOJA para agregar NUEVO avión al final de la lista
-        if (isTeamLeader) {
-            const addAvionHtml = `
-                <div class="inline-add-row avion-add no-print">
-                    <div class="inline-add-title">AGREGAR NUEVO AVIÓN A LA HOJA</div>
-                    <input type="text" id="in-new-ac-reg" placeholder="MATRÍCULA" maxlength="6" style="width: 100px;" oninput="formatMatricula(this)">
-                    <input type="text" id="in-new-ac-wp" placeholder="WP (T00...)" maxlength="8" style="width: 100px;">
-                    <input type="text" id="in-new-ac-pos" placeholder="POSICIÓN" style="width: 100px;">
-                    <input type="time" id="in-new-ac-start" title="Inicio">
-                    <input type="time" id="in-new-ac-end" title="Término">
-                    <input type="text" id="in-new-ac-comment" placeholder="NOTA OPCIONAL" style="flex: 1;">
-                    <button class="btn-leader" onclick="addAvionInline()">+ AGREGAR AVIÓN</button>
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', addAvionHtml);
-        }
     }
 
-    // Controles de estado
+    // ==========================================
+    // CONTROLES DE ESTADO (DONE, PRIORITY, HELP)
+    // ==========================================
     function toggleTask(aId, tId) {
         const avion = avionesData.find(a => a.id == aId);
         const tarea = avion.tareas.find(t => t.id == tId);
@@ -681,30 +628,125 @@
         tarea.help = !tarea.help; saveData(); render();
     }
 
-    // Edición
-    function editAvionFull(id) {
-        const avion = avionesData.find(a => a.id == id);
-        if (!avion) return;
-        const nReg = prompt("EDITAR MATRÍCULA:", avion.reg); if (nReg !== null) avion.reg = nReg.trim().toUpperCase();
-        const nWp = prompt("EDITAR WP (8 CARACTERES):", avion.wp); if (nWp !== null) avion.wp = nWp.trim().toUpperCase();
-        const nPos = prompt("EDITAR POSICIÓN:", avion.pos); if (nPos !== null) avion.pos = nPos.trim().toUpperCase();
-        saveData(); render();
+    // ==========================================
+    // FUNCIONES MODAL: AVIÓN
+    // ==========================================
+    function openAddAvionModal() {
+        document.getElementById('add-ac-reg').value = '';
+        document.getElementById('add-ac-wp').value = '';
+        document.getElementById('add-ac-pos').value = '';
+        document.getElementById('add-ac-start').value = '';
+        document.getElementById('add-ac-end').value = '';
+        document.getElementById('add-ac-comment').value = '';
+        document.getElementById('add-avion-modal').style.display = 'block';
     }
 
-    function editTaskFull(aId, tId) {
+    function saveAddAvion() {
+        const reg = document.getElementById('add-ac-reg').value.toUpperCase().trim();
+        let wp = document.getElementById('add-ac-wp').value.toUpperCase().trim();
+        const pos = document.getElementById('add-ac-pos').value.toUpperCase().trim();
+        const start = document.getElementById('add-ac-start').value;
+        const end = document.getElementById('add-ac-end').value;
+        const comment = document.getElementById('add-ac-comment').value.toUpperCase().trim();
+        
+        if (!reg || reg.length !== 6) return alert("LA MATRÍCULA DEBE ESTAR COMPLETA (EJ: CC-BGM)");
+        if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
+        if (wp && wp.length !== 8) return alert("EL WP DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
+
+        avionesData.push({ id: Date.now(), reg, wp, pos, start, end, comment, tareas: [] });
+        saveData(); render(); closeModal('add-avion-modal');
+    }
+
+    function openEditAvionModal(id) {
+        const avion = avionesData.find(a => a.id == id);
+        if (!avion) return;
+        editCurrentAvionId = id;
+
+        document.getElementById('edit-ac-reg').value = avion.reg;
+        document.getElementById('edit-ac-wp').value = avion.wp || '';
+        document.getElementById('edit-ac-pos').value = avion.pos || '';
+        document.getElementById('edit-ac-start').value = avion.start || '';
+        document.getElementById('edit-ac-end').value = avion.end || '';
+        document.getElementById('edit-ac-comment').value = avion.comment || '';
+        
+        document.getElementById('edit-avion-modal').style.display = 'block';
+    }
+
+    function saveEditAvion() {
+        const avion = avionesData.find(a => a.id == editCurrentAvionId);
+        
+        const reg = document.getElementById('edit-ac-reg').value.toUpperCase().trim();
+        let wp = document.getElementById('edit-ac-wp').value.toUpperCase().trim();
+        
+        if (!reg || reg.length !== 6) return alert("LA MATRÍCULA DEBE ESTAR COMPLETA (EJ: CC-BGM)");
+        if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
+        if (wp && wp.length !== 8) return alert("EL WP DEBE TENER EXACTAMENTE 8 CARACTERES.");
+
+        avion.reg = reg;
+        avion.wp = wp;
+        avion.pos = document.getElementById('edit-ac-pos').value.toUpperCase().trim();
+        avion.start = document.getElementById('edit-ac-start').value;
+        avion.end = document.getElementById('edit-ac-end').value;
+        avion.comment = document.getElementById('edit-ac-comment').value.toUpperCase().trim();
+
+        saveData(); render(); closeModal('edit-avion-modal');
+    }
+
+    function confirmDeleteAvion() {
+        if (confirm("¿CONFIRMAS BORRAR ESTE AVIÓN Y TODAS SUS TAREAS ASIGNADAS?")) {
+            avionesData = avionesData.filter(a => a.id != editCurrentAvionId);
+            saveData(); render(); closeModal('edit-avion-modal');
+        }
+    }
+
+    // ==========================================
+    // FUNCIONES MODAL: TAREAS
+    // ==========================================
+    function openAddTaskModal(avionId) {
+        editCurrentAvionId = avionId;
+        document.getElementById('add-task-desc').value = '';
+        document.getElementById('add-task-tango').value = '';
+        
+        const container = document.getElementById('add-task-techs');
+        container.innerHTML = '';
+        
+        if (shiftTechs.length === 0) {
+            container.innerHTML = '<div style="font-size:12px; color:var(--comment);">NO HAY TÉCNICOS AGREGADOS A LA HOJA</div>';
+        } else {
+            shiftTechs.forEach(tech => {
+                container.innerHTML += `<label><input type="checkbox" class="add-tech-cb" value="${tech}"> ${tech}</label>`;
+            });
+        }
+        document.getElementById('add-task-modal').style.display = 'block';
+    }
+
+    function saveAddTask() {
+        const avion = avionesData.find(a => a.id == editCurrentAvionId);
+        const desc = document.getElementById('add-task-desc').value.trim().toUpperCase();
+        let tango = document.getElementById('add-task-tango').value.trim().toUpperCase();
+        
+        if (!desc) return alert("INGRESE LA DESCRIPCIÓN DE LA TAREA.");
+        if (tango.length === 5 && !tango.startsWith('T00')) tango = 'T00' + tango;
+        if (tango && tango.length !== 8) return alert("EL TANGO DEBE TENER EXACTAMENTE 8 CARACTERES.");
+
+        const checkboxes = document.querySelectorAll('.add-tech-cb:checked');
+        const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
+
+        avion.tareas.push({ id: Date.now(), desc, tango, techs, done: false, priority: false, help: false, comment: "" });
+        saveData(); render(); closeModal('add-task-modal');
+    }
+
+    function openEditTaskModal(aId, tId) {
         const avion = avionesData.find(a => a.id == aId);
         const tarea = avion.tareas.find(t => t.id == tId);
-        
         editCurrentAvionId = aId;
         editCurrentTaskId = tId;
 
         document.getElementById('edit-task-desc').value = tarea.desc;
         document.getElementById('edit-task-tango').value = tarea.tango || "";
         
-        // Generar checkboxes para el modal
         const container = document.getElementById('edit-task-techs');
         container.innerHTML = '';
-        
         const currentTechs = tarea.techs ? tarea.techs.split(' - ') : [];
         
         if (shiftTechs.length === 0) {
@@ -715,12 +757,7 @@
                 container.innerHTML += `<label><input type="checkbox" class="edit-tech-cb" value="${tech}" ${isChecked}> ${tech}</label>`;
             });
         }
-
         document.getElementById('edit-task-modal').style.display = 'block';
-    }
-
-    function closeEditModal() {
-        document.getElementById('edit-task-modal').style.display = 'none';
     }
 
     function saveEditTask() {
@@ -741,11 +778,20 @@
         tarea.tango = tango;
         tarea.techs = techs;
 
-        saveData();
-        render();
-        closeEditModal();
+        saveData(); render(); closeModal('edit-task-modal');
     }
 
+    function confirmDeleteTask() {
+        if (confirm("¿CONFIRMAS BORRAR ESTA TAREA?")) {
+            const avion = avionesData.find(a => a.id == editCurrentAvionId);
+            avion.tareas = avion.tareas.filter(t => t.id != editCurrentTaskId);
+            saveData(); render(); closeModal('edit-task-modal');
+        }
+    }
+
+    // ==========================================
+    // NOTAS RÁPIDAS
+    // ==========================================
     function editAvionComment(id) {
         const avion = avionesData.find(a => a.id == id);
         const newComment = prompt("INGRESAR/EDITAR NOTA DEL AVIÓN (DEJA EN BLANCO PARA BORRAR):", avion.comment || "");
@@ -757,19 +803,6 @@
         const tarea = avion.tareas.find(t => t.id == tId);
         const newComment = prompt("INGRESAR/EDITAR NOTA (DEJA EN BLANCO PARA BORRAR):", tarea.comment || "");
         if (newComment !== null) { tarea.comment = newComment.trim().toUpperCase(); saveData(); render(); }
-    }
-
-    function deleteTask(aId, tId) {
-        const avion = avionesData.find(a => a.id == aId);
-        avion.tareas = avion.tareas.filter(t => t.id != tId);
-        saveData(); render();
-    }
-
-    function deleteAvion(id) {
-        if (confirm("¿BORRAR ESTE AVIÓN Y TODAS SUS TAREAS?")) {
-            avionesData = avionesData.filter(a => a.id != id);
-            saveData(); render();
-        }
     }
 </script>
 
