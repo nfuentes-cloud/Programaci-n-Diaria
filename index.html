@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Tareas Mantenimiento - LATAM</title>
+    <title>PANEL DE TAREAS MANTENIMIENTO - LATAM</title>
     <style>
         :root {
             --primary: #2F3E46; 
@@ -13,8 +13,13 @@
             --border: #e2e8f0;
         }
 
-        body {
+        /* Fuerza a que TODO el texto sea en mayúsculas */
+        body, input, select, button, textarea {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-transform: uppercase;
+        }
+
+        body {
             background-color: var(--bg);
             color: var(--primary);
             margin: 0;
@@ -70,7 +75,6 @@
             margin-bottom: 30px;
             border-bottom: 2px solid var(--primary);
             padding-bottom: 10px;
-            text-transform: uppercase;
         }
 
         .avion-section { margin-bottom: 40px; }
@@ -107,13 +111,13 @@
             align-items: flex-start;
         }
 
-        /* Checkbox tipo CUBO PERFECTO */
+        /* Checkbox tipo CUADRADO PERFECTO */
         .checkbox-custom {
             appearance: none;
             width: 22px;
             height: 22px;
             border: 2px solid var(--primary);
-            border-radius: 3px; /* Más cuadrado */
+            border-radius: 0px; /* 0px para que sea cuadrado estricto */
             margin-right: 15px;
             margin-top: 2px;
             cursor: pointer;
@@ -150,7 +154,7 @@
 
         .task-item.completed .tango-link {
             text-decoration: line-through;
-            color: var(--primary); /* Pierde el color vibrante al completarse */
+            color: var(--primary); 
         }
 
         .task-desc { font-weight: 500; font-size: 1.05em; }
@@ -159,9 +163,9 @@
             font-weight: 700; 
             color: #4a5568; 
             margin-top: 4px;
-            text-transform: uppercase;
         }
 
+        /* Botones de acción en la lista */
         .delete-btn {
             background: none;
             color: #e53e3e;
@@ -171,11 +175,20 @@
             margin-left: 10px;
         }
 
+        .edit-btn {
+            background: none;
+            color: #d69e2e;
+            border: 1px solid #d69e2e;
+            padding: 2px 8px;
+            font-size: 11px;
+            margin-left: auto;
+        }
+
         @media print {
             .no-print { display: none !important; }
             body { padding: 0; }
             .tango-link { text-decoration: none; color: black; }
-            .task-item.completed .task-info { opacity: 1; text-decoration: none; } /* En papel se ve normal, guiado solo por el check */
+            .task-item.completed .task-info { opacity: 1; text-decoration: none; }
         }
     </style>
 </head>
@@ -183,7 +196,6 @@
 
 <div class="container">
     <div class="controls-panel no-print">
-        <!-- Encabezado -->
         <div class="control-group">
             <select id="in-turno" onchange="updateHeader()">
                 <option value="Turno Día">Día</option>
@@ -191,31 +203,29 @@
                 <option value="Turno Noche">Noche</option>
             </select>
             <input type="date" id="in-fecha" onchange="updateHeader()">
-            <input type="text" id="in-jefe" placeholder="Jefe de Turno" oninput="updateHeader()">
+            <input type="text" id="in-jefe" placeholder="JEFE DE TURNO" oninput="updateHeader()">
         </div>
 
-        <!-- Agregar Avión -->
         <div class="control-group">
-            <strong>Aeronave:</strong>
-            <input type="text" id="in-ac-reg" placeholder="Matrícula (CC-...)">
-            <input type="text" id="in-ac-wp" placeholder="WP (Tango)">
-            <input type="text" id="in-ac-pos" placeholder="Gantt / Vuelo / Pos">
-            <button class="btn-accent" onclick="addAvion()">+ Avión</button>
+            <strong>AERONAVE:</strong>
+            <input type="text" id="in-ac-reg" placeholder="MATRÍCULA (CC-...)">
+            <input type="text" id="in-ac-wp" placeholder="WP (TANGO)">
+            <input type="text" id="in-ac-pos" placeholder="GANTT / VUELO / POS">
+            <button class="btn-accent" onclick="addAvion()">+ AVIÓN</button>
         </div>
 
-        <!-- Agregar Tarea con Auto-detección -->
         <div class="control-group">
-            <strong>Tarea:</strong>
-            <select id="sel-avion"><option value="">Seleccionar Avión</option></select>
-            <input type="text" id="in-task-desc" placeholder="Pegar descripción aquí (Detecta Tango automáticamente)" oninput="detectTango(this)">
-            <input type="text" id="in-task-tango" placeholder="Tango detectada">
-            <input type="text" id="in-task-techs" placeholder="Técnicos">
-            <button class="btn-accent" onclick="addTask()">+ Tarea</button>
+            <strong>TAREA:</strong>
+            <select id="sel-avion"><option value="">SELECCIONAR AVIÓN</option></select>
+            <input type="text" id="in-task-desc" placeholder="PEGAR DESCRIPCIÓN AQUÍ" oninput="detectTango(this)">
+            <input type="text" id="in-task-tango" placeholder="TANGO DETECTADA">
+            <input type="text" id="in-task-techs" placeholder="TÉCNICOS">
+            <button class="btn-accent" onclick="addTask()">+ TAREA</button>
         </div>
         
         <div class="control-group" style="justify-content: space-between;">
-            <button class="btn-clear" onclick="clearAllData()">🗑️ Borrar Todo</button>
-            <button onclick="window.print()" style="background-color: #718096;">🖨️ Imprimir / PDF</button>
+            <button class="btn-clear" onclick="clearAllData()">🗑️ BORRAR TODO</button>
+            <button onclick="window.print()" style="background-color: #718096;">🖨️ IMPRIMIR / PDF</button>
         </div>
     </div>
 
@@ -230,12 +240,10 @@
     const MAINTENIX_URL = "https://maintenix.lan.com/maintenix/common/ToDoList.jsp";
     const STORAGE_KEY = 'latam_line_maintenance_data';
 
-    // Inicialización y carga de datos locales
     document.getElementById('in-fecha').valueAsDate = new Date();
     loadData();
     updateHeader();
 
-    // PERSISTENCIA DE DATOS (Local Storage)
     function saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(avionesData));
     }
@@ -249,7 +257,7 @@
     }
 
     function clearAllData() {
-        if(confirm("⚠️ ¿Estás seguro de que quieres borrar TODA la hoja de turno? Esto no se puede deshacer.")) {
+        if(confirm("⚠️ ¿ESTÁS SEGURO DE QUE QUIERES BORRAR TODA LA HOJA DE TURNO? ESTO NO SE PUEDE DESHACER.")) {
             avionesData = [];
             saveData();
             render();
@@ -257,20 +265,19 @@
     }
 
     function updateHeader() {
-        const turno = document.getElementById('in-turno').value;
+        const turno = document.getElementById('in-turno').value.toUpperCase();
         const fechaRaw = document.getElementById('in-fecha').value;
-        const jefe = document.getElementById('in-jefe').value;
+        const jefe = document.getElementById('in-jefe').value.toUpperCase();
         
         const fecha = new Date(fechaRaw + 'T00:00:00').toLocaleDateString('es-ES', {
             weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
+        }).toUpperCase();
 
         document.getElementById('display-header').innerText = `${turno} ${fecha} ${jefe ? '- ' + jefe : ''}`;
     }
 
-    // Detectar código Tango (T seguido de números y letras)
     function detectTango(input) {
-        const text = input.value;
+        const text = input.value.toUpperCase();
         const regex = /T[0-9]{2}[A-Z0-9]{5}/g;
         const matches = text.match(regex);
         
@@ -284,9 +291,9 @@
     function addAvion() {
         const reg = document.getElementById('in-ac-reg').value.toUpperCase();
         const wp = document.getElementById('in-ac-wp').value.toUpperCase();
-        const pos = document.getElementById('in-ac-pos').value;
+        const pos = document.getElementById('in-ac-pos').value.toUpperCase();
 
-        if (!reg) return alert("Ingrese matrícula");
+        if (!reg) return alert("INGRESE MATRÍCULA");
 
         avionesData.push({
             id: Date.now(),
@@ -305,11 +312,11 @@
 
     function addTask() {
         const avionId = document.getElementById('sel-avion').value;
-        const desc = document.getElementById('in-task-desc').value.trim();
+        const desc = document.getElementById('in-task-desc').value.trim().toUpperCase();
         const tango = document.getElementById('in-task-tango').value.toUpperCase().trim();
         const techs = document.getElementById('in-task-techs').value.toUpperCase().trim();
 
-        if (!avionId || !desc) return alert("Complete los datos de la tarea");
+        if (!avionId || !desc) return alert("COMPLETE LOS DATOS DE LA TAREA");
 
         const avion = avionesData.find(a => a.id == avionId);
         avion.tareas.push({
@@ -322,7 +329,6 @@
 
         document.getElementById('in-task-desc').value = '';
         document.getElementById('in-task-tango').value = '';
-        // No borramos los técnicos para que sea más fácil asignar la siguiente tarea a los mismos
         saveData();
         render();
     }
@@ -332,7 +338,7 @@
             await navigator.clipboard.writeText(tangoCode);
             window.open(MAINTENIX_URL, '_blank');
         } catch (err) {
-            console.error('Error al copiar:', err);
+            console.error('ERROR AL COPIAR:', err);
         }
     }
 
@@ -340,20 +346,17 @@
         const container = document.getElementById('aviones-container');
         const select = document.getElementById('sel-avion');
         
-        // Guardar selección actual si existe
         const currentSelection = select.value;
         
         container.innerHTML = '';
-        select.innerHTML = '<option value="">Seleccionar Avión</option>';
+        select.innerHTML = '<option value="">SELECCIONAR AVIÓN</option>';
 
         avionesData.forEach(avion => {
-            // Update Select
             const opt = document.createElement('option');
             opt.value = avion.id;
             opt.textContent = avion.reg;
             select.appendChild(opt);
 
-            // Build UI
             const div = document.createElement('div');
             div.className = 'avion-section';
             
@@ -362,20 +365,18 @@
             let html = `
                 <div class="avion-title">
                     • ${avion.reg} ${wpDisplay} ${avion.pos ? '(' + avion.pos + ')' : ''}
-                    <button class="delete-btn no-print" onclick="deleteAvion(${avion.id})">Eliminar</button>
+                    <button class="edit-btn no-print" onclick="editAvion(${avion.id})">EDITAR</button>
+                    <button class="delete-btn no-print" onclick="deleteAvion(${avion.id})">ELIMINAR</button>
                 </div>
             `;
 
             avion.tareas.forEach(t => {
-                // EVITAR TANGO DUPLICADA: Limpiamos la descripción de cualquier rastro de la Tango
                 let cleanDesc = t.desc;
                 let tangoDisplay = '';
 
                 if (t.tango) {
-                    // Quitamos la Tango (con o sin corchetes) de la descripción
                     const regexClean = new RegExp(`\\[?${t.tango}\\]?`, 'gi');
                     cleanDesc = cleanDesc.replace(regexClean, '').trim();
-                    // Limpiamos posibles guiones sueltos que hayan quedado al final
                     cleanDesc = cleanDesc.replace(/[- ]+$/, '').trim();
                     
                     tangoDisplay = ` [<span class="tango-link" onclick="handleTangoClick('${t.tango}')">${t.tango}</span>]`;
@@ -388,6 +389,7 @@
                             <div class="task-desc">- ${cleanDesc} ${tangoDisplay}</div>
                             ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
                         </div>
+                        <button class="edit-btn no-print" onclick="editTask(${avion.id}, ${t.id})">EDITAR</button>
                         <button class="delete-btn no-print" onclick="deleteTask(${avion.id}, ${t.id})">X</button>
                     </div>
                 `;
@@ -397,10 +399,46 @@
             container.appendChild(div);
         });
 
-        // Restaurar selección
         if (currentSelection && avionesData.find(a => a.id == currentSelection)) {
             select.value = currentSelection;
         }
+    }
+
+    // Funciones de edición
+    function editAvion(id) {
+        const avion = avionesData.find(a => a.id == id);
+        if (!avion) return;
+
+        const newReg = prompt("EDITAR MATRÍCULA:", avion.reg);
+        if (newReg !== null) avion.reg = newReg.trim().toUpperCase();
+
+        const newWp = prompt("EDITAR WP (TANGO):", avion.wp);
+        if (newWp !== null) avion.wp = newWp.trim().toUpperCase();
+
+        const newPos = prompt("EDITAR POSICIÓN:", avion.pos);
+        if (newPos !== null) avion.pos = newPos.trim().toUpperCase();
+
+        saveData();
+        render();
+    }
+
+    function editTask(aId, tId) {
+        const avion = avionesData.find(a => a.id == aId);
+        if (!avion) return;
+        const tarea = avion.tareas.find(t => t.id == tId);
+        if (!tarea) return;
+
+        const newDesc = prompt("EDITAR DESCRIPCIÓN:", tarea.desc);
+        if (newDesc !== null) tarea.desc = newDesc.trim().toUpperCase();
+
+        const newTango = prompt("EDITAR TANGO:", tarea.tango);
+        if (newTango !== null) tarea.tango = newTango.trim().toUpperCase();
+
+        const newTechs = prompt("EDITAR TÉCNICOS:", tarea.techs);
+        if (newTechs !== null) tarea.techs = newTechs.trim().toUpperCase();
+
+        saveData();
+        render();
     }
 
     function toggleTask(aId, tId) {
@@ -408,7 +446,7 @@
         const tarea = avion.tareas.find(t => t.id == tId);
         tarea.done = !tarea.done;
         saveData();
-        render(); // Re-render para aplicar estilos de opacidad
+        render(); 
     }
 
     function deleteTask(aId, tId) {
@@ -419,7 +457,7 @@
     }
 
     function deleteAvion(id) {
-        if (confirm("¿Borrar este avión y todas sus tareas?")) {
+        if (confirm("¿BORRAR ESTE AVIÓN Y TODAS SUS TAREAS?")) {
             avionesData = avionesData.filter(a => a.id != id);
             saveData();
             render();
