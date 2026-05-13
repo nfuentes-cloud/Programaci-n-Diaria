@@ -11,6 +11,7 @@
             --bg: #ffffff;
             --light-gray: #f4f5f7;
             --border: #e2e8f0;
+            --leader-color: #d69e2e;
         }
 
         /* Fuerza a que TODO el texto sea en mayúsculas */
@@ -28,13 +29,30 @@
 
         .container { max-width: 1000px; margin: 0 auto; }
 
+        /* Barra Superior (Visible en ambos modos) */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            align-items: center;
+        }
+
+        /* Ocultar elementos exclusivos del Team Leader cuando NO está en ese modo */
+        body:not(.team-leader-mode) .leader-only {
+            display: none !important;
+        }
+
         /* Panel de Control */
         .controls-panel {
             background-color: var(--light-gray);
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 30px;
-            border-left: 5px solid var(--accent);
+            border-left: 5px solid var(--leader-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
@@ -61,11 +79,12 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            transition: opacity 0.2s;
+            transition: all 0.2s;
         }
 
         button:hover { opacity: 0.9; }
         .btn-accent { background-color: var(--accent); }
+        .btn-leader { background-color: var(--leader-color); color: #fff; }
         .btn-clear { background-color: #e53e3e; }
 
         /* Estilos de la Lista */
@@ -111,18 +130,23 @@
             align-items: flex-start;
         }
 
-        /* Checkbox tipo CUADRADO PERFECTO */
+        /* Checkbox tipo CUADRADO PERFECTO Y COMPACTO */
         .checkbox-custom {
             appearance: none;
-            width: 22px;
-            height: 22px;
+            width: 18px; 
+            height: 18px;
+            min-width: 18px;
+            min-height: 18px;
+            box-sizing: border-box;
+            aspect-ratio: 1 / 1;
             border: 2px solid var(--primary);
-            border-radius: 0px; /* 0px para que sea cuadrado estricto */
-            margin-right: 15px;
-            margin-top: 2px;
+            border-radius: 0px; 
+            margin-right: 12px;
+            margin-top: 3px;
             cursor: pointer;
             position: relative;
             flex-shrink: 0;
+            align-self: flex-start;
             transition: all 0.2s;
         }
 
@@ -135,10 +159,10 @@
             content: '✓';
             position: absolute;
             color: white;
-            left: 4px;
-            top: -3px;
+            left: 1px;
+            top: -4px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         /* Tarea completada: opacidad y tachado */
@@ -177,8 +201,8 @@
 
         .edit-btn {
             background: none;
-            color: #d69e2e;
-            border: 1px solid #d69e2e;
+            color: var(--leader-color);
+            border: 1px solid var(--leader-color);
             padding: 2px 8px;
             font-size: 11px;
             margin-left: auto;
@@ -195,7 +219,13 @@
 <body>
 
 <div class="container">
-    <div class="controls-panel no-print">
+    
+    <div class="top-bar no-print">
+        <button id="btn-mode-toggle" class="btn-accent" onclick="toggleMode()">MODO ACTUAL: TÉCNICO (CAMBIAR A TEAM LEADER)</button>
+        <button onclick="window.print()" style="background-color: #718096;">🖨️ IMPRIMIR / PDF</button>
+    </div>
+
+    <div class="controls-panel leader-only no-print">
         <div class="control-group">
             <select id="in-turno" onchange="updateHeader()">
                 <option value="Turno Día">Día</option>
@@ -211,7 +241,7 @@
             <input type="text" id="in-ac-reg" placeholder="MATRÍCULA (CC-...)">
             <input type="text" id="in-ac-wp" placeholder="WP (TANGO)">
             <input type="text" id="in-ac-pos" placeholder="GANTT / VUELO / POS">
-            <button class="btn-accent" onclick="addAvion()">+ AVIÓN</button>
+            <button class="btn-leader" onclick="addAvion()">+ AVIÓN</button>
         </div>
 
         <div class="control-group">
@@ -220,12 +250,11 @@
             <input type="text" id="in-task-desc" placeholder="PEGAR DESCRIPCIÓN AQUÍ" oninput="detectTango(this)">
             <input type="text" id="in-task-tango" placeholder="TANGO DETECTADA">
             <input type="text" id="in-task-techs" placeholder="TÉCNICOS">
-            <button class="btn-accent" onclick="addTask()">+ TAREA</button>
+            <button class="btn-leader" onclick="addTask()">+ TAREA</button>
         </div>
         
-        <div class="control-group" style="justify-content: space-between;">
+        <div class="control-group" style="justify-content: flex-end;">
             <button class="btn-clear" onclick="clearAllData()">🗑️ BORRAR TODO</button>
-            <button onclick="window.print()" style="background-color: #718096;">🖨️ IMPRIMIR / PDF</button>
         </div>
     </div>
 
@@ -237,12 +266,30 @@
 
 <script>
     let avionesData = [];
+    let isTeamLeader = false; // El modo por defecto es Técnico
     const MAINTENIX_URL = "https://maintenix.lan.com/maintenix/common/ToDoList.jsp";
     const STORAGE_KEY = 'latam_line_maintenance_data';
 
     document.getElementById('in-fecha').valueAsDate = new Date();
     loadData();
     updateHeader();
+
+    // Sistema de Cambio de Modo
+    function toggleMode() {
+        isTeamLeader = !isTeamLeader;
+        const body = document.body;
+        const btnToggle = document.getElementById('btn-mode-toggle');
+
+        if (isTeamLeader) {
+            body.classList.add('team-leader-mode');
+            btnToggle.innerText = "MODO ACTUAL: TEAM LEADER (CAMBIAR A TÉCNICO)";
+            btnToggle.style.backgroundColor = "var(--leader-color)";
+        } else {
+            body.classList.remove('team-leader-mode');
+            btnToggle.innerText = "MODO ACTUAL: TÉCNICO (CAMBIAR A TEAM LEADER)";
+            btnToggle.style.backgroundColor = "var(--accent)";
+        }
+    }
 
     function saveData() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(avionesData));
@@ -362,11 +409,12 @@
             
             const wpDisplay = avion.wp ? `<span class="tango-link" onclick="handleTangoClick('${avion.wp}')">(${avion.wp})</span>` : '';
             
+            // Los botones Editar/Eliminar ahora tienen la clase "leader-only"
             let html = `
                 <div class="avion-title">
                     • ${avion.reg} ${wpDisplay} ${avion.pos ? '(' + avion.pos + ')' : ''}
-                    <button class="edit-btn no-print" onclick="editAvion(${avion.id})">EDITAR</button>
-                    <button class="delete-btn no-print" onclick="deleteAvion(${avion.id})">ELIMINAR</button>
+                    <button class="edit-btn leader-only no-print" onclick="editAvion(${avion.id})">EDITAR</button>
+                    <button class="delete-btn leader-only no-print" onclick="deleteAvion(${avion.id})">ELIMINAR</button>
                 </div>
             `;
 
@@ -389,8 +437,8 @@
                             <div class="task-desc">- ${cleanDesc} ${tangoDisplay}</div>
                             ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
                         </div>
-                        <button class="edit-btn no-print" onclick="editTask(${avion.id}, ${t.id})">EDITAR</button>
-                        <button class="delete-btn no-print" onclick="deleteTask(${avion.id}, ${t.id})">X</button>
+                        <button class="edit-btn leader-only no-print" onclick="editTask(${avion.id}, ${t.id})">EDITAR</button>
+                        <button class="delete-btn leader-only no-print" onclick="deleteTask(${avion.id}, ${t.id})">X</button>
                     </div>
                 `;
             });
@@ -404,7 +452,6 @@
         }
     }
 
-    // Funciones de edición
     function editAvion(id) {
         const avion = avionesData.find(a => a.id == id);
         if (!avion) return;
