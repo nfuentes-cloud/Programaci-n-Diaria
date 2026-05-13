@@ -98,6 +98,54 @@
         .btn-leader { background-color: var(--leader-color); color: #fff; }
         .btn-clear { background-color: var(--danger); }
 
+        /* --- ESTILOS BUSCADOR INTELIGENTE DE TÉCNICOS --- */
+        .autocomplete-container {
+            position: relative;
+            display: inline-block;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .autocomplete-items div:hover {
+            background-color: #e2e8f0;
+        }
+
+        .tech-cab-badge {
+            background-color: #3182ce;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        /* ----------------------------------------------- */
+
         .document-header {
             font-size: 1.4em;
             font-weight: 800;
@@ -148,7 +196,6 @@
             border: 1px solid transparent;
         }
 
-        /* --- ANIMACIONES DE RESPIRACIÓN --- */
         @keyframes breathePriority {
             0% { background-color: #fff5f5; border-left-color: var(--danger); }
             50% { background-color: #ffffff; border-left-color: #fed7d7; }
@@ -167,20 +214,9 @@
             100% { background-color: #fff5f5; border-left-color: var(--danger); }
         }
 
-        .task-item.priority {
-            animation: breathePriority 2.5s infinite ease-in-out;
-            border-left: 4px solid var(--danger);
-        }
-
-        .task-item.help-needed {
-            animation: breatheHelp 2.5s infinite ease-in-out;
-            border-left: 4px solid var(--help);
-        }
-
-        .task-item.priority.help-needed {
-            animation: breatheBoth 2.5s infinite ease-in-out;
-            border-left: 4px solid var(--danger);
-        }
+        .task-item.priority { animation: breathePriority 2.5s infinite ease-in-out; border-left: 4px solid var(--danger); }
+        .task-item.help-needed { animation: breatheHelp 2.5s infinite ease-in-out; border-left: 4px solid var(--help); }
+        .task-item.priority.help-needed { animation: breatheBoth 2.5s infinite ease-in-out; border-left: 4px solid var(--danger); }
 
         .priority-badge { color: var(--danger); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
         .help-badge { color: var(--help); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
@@ -206,12 +242,7 @@
             user-select: none;
         }
 
-        .task-item.completed .status-toggle {
-            background-color: var(--accent);
-            border-color: var(--accent);
-            color: white;
-        }
-
+        .task-item.completed .status-toggle { background-color: var(--accent); border-color: var(--accent); color: white; }
         .task-item.completed { animation: none !important; border-left-color: transparent !important; background-color: transparent !important; }
         .task-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .task-info { width: 100%; transition: all 0.3s ease; }
@@ -230,7 +261,6 @@
         .edit-btn { color: var(--leader-color); border: 1px solid var(--leader-color); }
         .priority-btn { color: var(--danger); border: 1px solid var(--danger); font-weight: bold; }
         .comment-btn { color: var(--comment); border: 1px solid var(--comment); }
-        
         .help-btn { color: var(--help); border: 1px solid var(--help); font-weight: bold; }
         .task-item.help-needed:not(.completed) .help-btn { background-color: var(--help); color: white; }
 
@@ -285,7 +315,13 @@
             <select id="sel-avion"><option value="">SELECCIONAR AVIÓN</option></select>
             <input type="text" id="in-task-desc" placeholder="TAREA" oninput="detectTango(this)">
             <input type="text" id="in-task-tango" placeholder="TANGO (8 CARAC.)" maxlength="8" style="width: 130px;">
-            <input type="text" id="in-task-techs" placeholder="TÉCNICOS" oninput="formatTechs(this)">
+            
+            <!-- BUSCADOR INTELIGENTE DE TÉCNICOS -->
+            <div class="autocomplete-container">
+                <input type="text" id="in-task-techs" placeholder="TÉCNICOS (BUSCAR)" style="width: 100%; box-sizing: border-box;">
+                <div id="techs-dropdown" class="autocomplete-items"></div>
+            </div>
+
             <button class="btn-leader" onclick="addTask()">+ TAREA</button>
         </div>
         
@@ -310,8 +346,87 @@
     const KEY_FECHA = 'latam_header_fecha';
     const KEY_JEFE = 'latam_header_jefe';
 
+    // ==========================================
+    // BASE DE DATOS LOCAL DE TÉCNICOS (MOCKUP)
+    // Aquí puedes editar la lista de los técnicos del mes/turno
+    // ==========================================
+    const listadoTecnicos = [
+        { name: "PEREZ, J.", group: "CAB" },
+        { name: "SOTO, M.", group: "CAB" },
+        { name: "GOMEZ, A.", group: "CAB" },
+        { name: "ROJAS, P.", group: "LINEA" },
+        { name: "SILVA, C.", group: "LINEA" },
+        { name: "DIAZ, R.", group: "LINEA" },
+        { name: "CONTRERAS, F.", group: "LINEA" },
+        { name: "MUNOZ, D.", group: "LINEA" }
+    ];
+    // ==========================================
+
     loadData();
     updateHeader();
+    setupAutocomplete();
+
+    // Lógica del Buscador Inteligente
+    function setupAutocomplete() {
+        const input = document.getElementById("in-task-techs");
+        const dropdown = document.getElementById("techs-dropdown");
+
+        // Función para mostrar la lista
+        function renderList(searchValue) {
+            dropdown.innerHTML = '';
+            let currentInputParts = input.value.split(' - ').map(s => s.trim());
+            // Extraer solo la última palabra que se está escribiendo
+            let currentSearch = currentInputParts[currentInputParts.length - 1].toUpperCase();
+
+            // Filtrar lista
+            let filtered = listadoTecnicos.filter(t => t.name.toUpperCase().includes(currentSearch));
+            
+            // Ordenar: Primero CAB, luego alfabético
+            filtered.sort((a, b) => {
+                if (a.group === 'CAB' && b.group !== 'CAB') return -1;
+                if (a.group !== 'CAB' && b.group === 'CAB') return 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            if (filtered.length === 0 || (filtered.length === 1 && filtered[0].name === currentSearch)) {
+                dropdown.style.display = "none";
+                return;
+            }
+
+            dropdown.style.display = "block";
+
+            filtered.forEach(tech => {
+                let div = document.createElement("div");
+                let badge = tech.group === 'CAB' ? `<span class="tech-cab-badge">CAB</span>` : '';
+                div.innerHTML = `<span>${tech.name}</span> ${badge}`;
+                
+                div.addEventListener("click", function() {
+                    // Reemplazar la última parte escrita con el nombre completo y agregar el guion
+                    currentInputParts[currentInputParts.length - 1] = tech.name;
+                    input.value = currentInputParts.join(' - ') + ' - ';
+                    dropdown.style.display = "none";
+                    input.focus();
+                });
+                dropdown.appendChild(div);
+            });
+        }
+
+        input.addEventListener("input", function() {
+            renderList(this.value);
+            formatTechs(this); // Mantiene el formato automático
+        });
+
+        input.addEventListener("focus", function() {
+            renderList(this.value);
+        });
+
+        // Ocultar dropdown si se hace clic afuera
+        document.addEventListener("click", function (e) {
+            if (e.target !== input && e.target !== dropdown) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
 
     function toggleMode() {
         isTeamLeader = !isTeamLeader;
@@ -388,7 +503,6 @@
         input.value = val;
     }
 
-    // DETECCIÓN TANGO EXACTA A 8 CARACTERES (T00 + 5 caracteres)
     function detectTango(input) {
         const text = input.value.toUpperCase();
         const regex = /\bT00[A-Z0-9]{5}\b/g; 
@@ -408,15 +522,8 @@
         
         if (!reg || reg.length !== 6) return alert("LA MATRÍCULA DEBE ESTAR COMPLETA (EJ: CC-BGM)");
 
-        // WP INTELIGENTE -> Agrega T00 si escriben los 5 caracteres finales
-        if (wp.length === 5 && !wp.startsWith('T00')) {
-            wp = 'T00' + wp;
-        } 
-        
-        // Validación estricta a 8 caracteres
-        if (wp && wp.length !== 8) {
-            return alert("EL WP DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
-        }
+        if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
+        if (wp && wp.length !== 8) return alert("EL WP DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
 
         const existingAvion = avionesData.find(a => a.reg === reg);
         if (existingAvion) {
@@ -443,18 +550,15 @@
         const avionId = document.getElementById('sel-avion').value;
         const desc = document.getElementById('in-task-desc').value.trim().toUpperCase();
         let tango = document.getElementById('in-task-tango').value.toUpperCase().trim();
-        const techs = document.getElementById('in-task-techs').value.toUpperCase().trim();
+        let techs = document.getElementById('in-task-techs').value.toUpperCase().trim();
+
+        // Limpiar el guion extra final si el usuario lo dejó
+        techs = techs.replace(/\s*-\s*$/, '');
 
         if (!avionId || !desc) return alert("COMPLETE LOS DATOS DE LA TAREA.");
         
-        // TANGO INTELIGENTE -> Agrega T00 si escriben los 5 caracteres finales
-        if (tango.length === 5 && !tango.startsWith('T00')) {
-            tango = 'T00' + tango;
-        } 
-        
-        if (tango && tango.length !== 8) {
-            return alert("EL TANGO DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
-        }
+        if (tango.length === 5 && !tango.startsWith('T00')) tango = 'T00' + tango;
+        if (tango && tango.length !== 8) return alert("EL TANGO DEBE TENER EXACTAMENTE 8 CARACTERES (EJ: T00RWT2F).");
 
         const avion = avionesData.find(a => a.id == avionId);
 
@@ -479,6 +583,7 @@
 
         document.getElementById('in-task-desc').value = '';
         document.getElementById('in-task-tango').value = '';
+        document.getElementById('in-task-techs').value = '';
         saveData(); render();
     }
 
@@ -518,7 +623,6 @@
                         ${avion.comment ? `<div class="avion-comment">↳ NOTA AVIÓN: ${avion.comment}</div>` : ''}
                     </div>
                     <div class="action-btns no-print" style="margin-left: auto; margin-top: 0;">
-                        <!-- Botón de Nota para el Avión (Visible para todos) -->
                         <button class="small-btn comment-btn" onclick="editAvionComment(${avion.id})">${avionCommentBtnText}</button>
                         <div class="leader-btns leader-only">
                             <button class="small-btn delete-btn" onclick="deleteAvion(${avion.id})">ELIMINAR AVIÓN</button>
@@ -600,33 +704,26 @@
     function toggleHelp(aId, tId) {
         const avion = avionesData.find(a => a.id == aId);
         const tarea = avion.tareas.find(t => t.id == tId);
-        
         if (tarea.done) return alert("LA TAREA YA ESTÁ COMPLETADA.");
-        
         const accion = tarea.help ? "DESACTIVAR" : "ACTIVAR";
         if (!confirm(`¿CONFIRMAS QUE DESEAS ${accion} LA SOLICITUD DE APOYO?`)) return;
-        
         tarea.help = !tarea.help;
         saveData(); render();
     }
 
-    // Editar nota del avión
     function editAvionComment(id) {
         const avion = avionesData.find(a => a.id == id);
         const newComment = prompt("INGRESAR/EDITAR NOTA DEL AVIÓN (DEJA EN BLANCO PARA BORRAR):", avion.comment || "");
-        
         if (newComment !== null) {
             avion.comment = newComment.trim().toUpperCase();
             saveData(); render();
         }
     }
 
-    // Editar nota de la tarea
     function editTaskComment(aId, tId) {
         const avion = avionesData.find(a => a.id == aId);
         const tarea = avion.tareas.find(t => t.id == tId);
         const newComment = prompt("INGRESAR/EDITAR NOTA (DEJA EN BLANCO PARA BORRAR):", tarea.comment || "");
-        
         if (newComment !== null) {
             tarea.comment = newComment.trim().toUpperCase();
             saveData(); render();
