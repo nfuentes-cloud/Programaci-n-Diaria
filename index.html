@@ -13,8 +13,8 @@
             --border: #e2e8f0;
             --leader-color: #d69e2e;
             --danger: #e53e3e;
-            --comment: #718096;
             --help: #dd6b20; 
+            --comment: #718096;
         }
 
         body, input, select, button, textarea {
@@ -54,6 +54,8 @@
             box-sizing: border-box;
         }
 
+        /* Lógica de visibilidad Leader */
+        .leader-wrapper { display: contents; } /* Permite que los botones hijos se alineen en el flex parent */
         body:not(.team-leader-mode) .leader-only {
             display: none !important;
         }
@@ -133,7 +135,7 @@
             padding: 12px;
             border-radius: 4px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             border-left: 4px solid var(--primary);
         }
 
@@ -148,65 +150,103 @@
         .task-item {
             display: flex;
             margin-bottom: 12px;
-            padding: 10px;
+            padding: 12px;
             align-items: flex-start;
-            border-radius: 4px;
+            border-radius: 6px;
             transition: all 0.3s ease;
-            border: 1px solid transparent;
+            border: 1px solid var(--border);
+            background-color: #ffffff;
         }
 
-        /* Respiración Inteligente (Rápida y con resplandor) */
-        @keyframes breathePriority { 
-            0% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
-            50% { box-shadow: inset 4px 0 0 var(--danger), 0 0 15px rgba(229,62,62,0.4); background-color: #ffffff; } 
-            100% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
+        /* ==========================================
+           MODOS URGENTE / AYUDA (RESPIRACIÓN INTELIGENTE)
+           ========================================== */
+        @keyframes pulseDanger { 
+            0% { border-left-color: #fc8181; box-shadow: inset 4px 0 0 transparent; } 
+            50% { border-left-color: var(--danger); box-shadow: inset 6px 0 15px rgba(229,62,62,0.15); } 
+            100% { border-left-color: #fc8181; box-shadow: inset 4px 0 0 transparent; } 
         }
-        @keyframes breatheHelp { 
-            0% { box-shadow: inset 4px 0 0 var(--help), 0 0 5px rgba(221,107,32,0.1); background-color: #fffaf0; } 
-            50% { box-shadow: inset 4px 0 0 var(--help), 0 0 15px rgba(221,107,32,0.4); background-color: #ffffff; } 
-            100% { box-shadow: inset 4px 0 0 var(--help), 0 0 5px rgba(221,107,32,0.1); background-color: #fffaf0; } 
+        @keyframes pulseHelp { 
+            0% { border-left-color: #fbd38d; box-shadow: inset 4px 0 0 transparent; } 
+            50% { border-left-color: var(--help); box-shadow: inset 6px 0 15px rgba(221,107,32,0.15); } 
+            100% { border-left-color: #fbd38d; box-shadow: inset 4px 0 0 transparent; } 
         }
-        @keyframes breatheBoth { 
-            0% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
-            50% { box-shadow: inset 4px 0 0 var(--help), 0 0 15px rgba(221,107,32,0.4); background-color: #fffaf0; } 
-            100% { box-shadow: inset 4px 0 0 var(--danger), 0 0 5px rgba(229,62,62,0.1); background-color: #fff5f5; } 
+        @keyframes pulseBoth { 
+            0% { border-left-color: var(--danger); box-shadow: inset 4px 0 0 transparent; } 
+            50% { border-left-color: var(--help); box-shadow: inset 6px 0 15px rgba(221,107,32,0.15); } 
+            100% { border-left-color: var(--danger); box-shadow: inset 4px 0 0 transparent; } 
         }
 
-        .task-item.priority { animation: breathePriority 1.5s infinite ease-in-out; border-left: none; }
-        .task-item.help-needed { animation: breatheHelp 1.5s infinite ease-in-out; border-left: none; }
-        .task-item.priority.help-needed { animation: breatheBoth 1.5s infinite ease-in-out; border-left: none; }
+        .task-item.priority { 
+            border-left: 4px solid var(--danger); 
+            background-color: #fffafb; 
+            animation: pulseDanger 1.8s infinite ease-in-out; 
+        }
+        .task-item.help-needed { 
+            border-left: 4px solid var(--help); 
+            background-color: #fffdfa; 
+            animation: pulseHelp 1.8s infinite ease-in-out; 
+        }
+        .task-item.priority.help-needed { 
+            border-left: 4px solid var(--danger); 
+            background: linear-gradient(90deg, #fffafb 0%, #fffdfa 100%);
+            animation: pulseBoth 1.8s infinite ease-in-out; 
+        }
 
         .priority-badge { color: var(--danger); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
         .help-badge { color: var(--help); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
 
         .status-toggle {
-            width: 22px; height: 22px; min-width: 22px; min-height: 22px;
+            width: 24px; height: 24px; min-width: 24px; min-height: 24px;
             box-sizing: border-box; border: 2px solid var(--primary);
-            background-color: white; margin-right: 12px; margin-top: 2px;
+            background-color: white; margin-right: 15px; margin-top: 2px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
             font-weight: bold; color: transparent; font-size: 16px; transition: all 0.2s; user-select: none;
+            border-radius: 4px;
         }
 
         .task-item.completed .status-toggle { background-color: var(--accent); border-color: var(--accent); color: white; }
-        .task-item.completed { animation: none !important; box-shadow: inset 4px 0 0 transparent !important; background-color: transparent !important; }
+        .task-item.completed { animation: none !important; border-left: 1px solid var(--border) !important; background-color: transparent !important; box-shadow: none !important;}
         .task-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .task-info { width: 100%; transition: all 0.3s ease; }
         .task-item.completed .task-info { opacity: 0.5; text-decoration: line-through; }
         .task-item.completed .tango-link { text-decoration: line-through; color: var(--primary); }
 
         .task-desc { font-weight: 500; font-size: 1.05em; line-height: 1.4; }
-        .task-techs { font-size: 0.85em; font-weight: 700; color: #4a5568; margin-top: 4px; }
-        .task-comment { font-size: 0.85em; color: var(--comment); margin-top: 5px; font-style: italic; font-weight: 600; }
+        .task-techs { font-size: 0.85em; font-weight: 700; color: #4a5568; margin-top: 6px; }
+        .task-comment { font-size: 0.85em; color: var(--comment); margin-top: 6px; font-style: italic; font-weight: 600; }
 
-        .action-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
-        .leader-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+        /* ==========================================
+           BOTONERAS TÁCTICAS UNIFICADAS
+           ========================================== */
+        .action-bar { 
+            display: flex; flex-wrap: wrap; gap: 8px; 
+            margin-top: 10px; align-items: stretch; justify-content: flex-end; 
+        }
+        
+        .action-bar.avion-bar { margin-top: 0; }
 
-        .small-btn { padding: 4px 10px; font-size: 11px; border-radius: 3px; background: none; }
-        .edit-btn { color: var(--leader-color); border: 1px solid var(--leader-color); font-weight: bold; }
-        .priority-btn { color: var(--danger); border: 1px solid var(--danger); font-weight: bold; }
-        .comment-btn { color: var(--comment); border: 1px solid var(--comment); }
-        .help-btn { color: var(--help); border: 1px solid var(--help); font-weight: bold; }
-        .task-item.help-needed:not(.completed) .help-btn { background-color: var(--help); color: white; }
+        .action-btn {
+            flex: 1; min-width: 90px; max-width: 140px;
+            padding: 6px 8px; font-size: 11px; font-weight: 700;
+            border-radius: 4px; border: 1px solid var(--border);
+            background: #ffffff; color: var(--primary);
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+        }
+
+        .action-btn:hover { background: var(--light-gray); border-color: #cbd5e0; }
+        
+        /* Botones Activos (Ayuda / Urgente) */
+        .action-btn.active-danger { background: var(--danger); color: white; border-color: var(--danger); }
+        .action-btn.active-danger:hover { opacity: 0.8; background: var(--danger); }
+        
+        .action-btn.active-help { background: var(--help); color: white; border-color: var(--help); }
+        .action-btn.active-help:hover { opacity: 0.8; background: var(--help); }
+        
+        /* Resaltados Especiales */
+        .btn-highlight { color: var(--accent); border-color: var(--accent); background-color: #f0fbfb; }
+        .btn-highlight:hover { background-color: var(--accent); color: white; }
 
         /* Modal Styles */
         .modal {
@@ -531,23 +571,25 @@
             const wpDisplay = avion.wp ? `<span class="tango-link" onclick="handleTangoClick('${avion.wp}')">(${avion.wp})</span>` : '';
             const posDisplay = avion.pos ? `<span class="avion-pos">POSICIÓN: ${avion.pos}</span>` : '';
             const timesDisplay = (avion.start || avion.end) ? `<span class="avion-times">🕒 ${avion.start || '--:--'} - ${avion.end || '--:--'}</span>` : '';
-            const avionCommentBtnText = avion.comment ? '💬 EDITAR NOTA' : '💬 NOTA AVIÓN';
-
+            
+            // Render Cabecera Avión
             let html = `
                 <div class="avion-title">
                     <div class="avion-info-main">
                         • ${avion.reg} ${wpDisplay} ${posDisplay} ${timesDisplay}
                         ${avion.comment ? `<div class="avion-comment">↳ NOTA AVIÓN: ${avion.comment}</div>` : ''}
                     </div>
-                    <div class="action-btns no-print" style="margin-left: auto; margin-top: 0;">
-                        <button class="small-btn comment-btn" onclick="editAvionComment(${avion.id})">${avionCommentBtnText}</button>
-                        <div class="leader-btns leader-only">
-                            <button class="small-btn edit-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR AVIÓN</button>
+                    <div class="action-bar avion-bar no-print">
+                        <button class="action-btn" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
+                        <div class="leader-only leader-wrapper">
+                            <button class="action-btn btn-highlight" onclick="openAddTaskModal(${avion.id})">➕ TAREA</button>
+                            <button class="action-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR</button>
                         </div>
                     </div>
                 </div>
             `;
 
+            // Render Tareas
             avion.tareas.forEach(t => {
                 let cleanDesc = t.desc; let tangoDisplay = '';
 
@@ -559,7 +601,6 @@
 
                 const priorityLabel = t.priority ? '<span class="priority-badge">🔥 URGENTE</span>' : '';
                 const helpLabel = t.help ? '<span class="help-badge">🆘 APOYO SOLICITADO</span>' : '';
-                const taskCommentBtnText = t.comment ? '💬 EDITAR NOTA' : '💬 NOTA';
 
                 html += `
                     <div class="task-item ${t.done ? 'completed' : ''} ${t.priority ? 'priority' : ''} ${t.help ? 'help-needed' : ''}">
@@ -570,26 +611,20 @@
                                 ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
                                 ${t.comment ? `<div class="task-comment">↳ NOTA: ${t.comment}</div>` : ''}
                             </div>
-                            <div class="action-btns no-print">
-                                <button class="small-btn help-btn" onclick="toggleHelp(${avion.id}, ${t.id})">🆘 PEDIR AYUDA</button>
-                                <button class="small-btn comment-btn" onclick="editTaskComment(${avion.id}, ${t.id})">${taskCommentBtnText}</button>
-                                <div class="leader-btns leader-only">
-                                    <button class="small-btn priority-btn" onclick="togglePriority(${avion.id}, ${t.id})">⭐ URGENTE</button>
-                                    <button class="small-btn edit-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR TAREA</button>
+                            <div class="action-bar no-print">
+                                <div class="leader-only leader-wrapper">
+                                    <button class="action-btn ${t.priority ? 'active-danger' : ''}" onclick="togglePriority(${avion.id}, ${t.id})">🔥 URGENTE</button>
+                                </div>
+                                <button class="action-btn ${t.help ? 'active-help' : ''}" onclick="toggleHelp(${avion.id}, ${t.id})">🆘 APOYO</button>
+                                <button class="action-btn" onclick="editTaskComment(${avion.id}, ${t.id})">💬 NOTA</button>
+                                <div class="leader-only leader-wrapper">
+                                    <button class="action-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
             });
-
-            if (isTeamLeader) {
-                html += `
-                    <div class="leader-only no-print" style="margin-left: 44px; margin-top: 5px;">
-                        <button class="small-btn btn-leader" onclick="openAddTaskModal(${avion.id})" style="padding: 6px 12px;">+ AGREGAR TAREA</button>
-                    </div>
-                `;
-            }
 
             div.innerHTML = html;
             container.appendChild(div);
