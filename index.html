@@ -10,7 +10,7 @@
             --accent: #38B2AC; 
             --bg: #ffffff;
             --light-gray: #f4f5f7;
-            --border: #e2e8f0;
+            --border: #cbd5e0; /* Un poco más definido */
             --leader-color: #d69e2e;
             --danger: #e53e3e;
             --help: #dd6b20; 
@@ -38,8 +38,8 @@
             margin-bottom: 20px;
             background-color: var(--light-gray);
             padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 6px;
+            border: 1px solid var(--border);
             align-items: center;
         }
 
@@ -55,88 +55,98 @@
         }
 
         /* Lógica de visibilidad Leader */
-        .leader-wrapper { display: contents; } /* Permite que los botones hijos se alineen en el flex parent */
+        .leader-wrapper { display: contents; } 
         body:not(.team-leader-mode) .leader-only {
             display: none !important;
         }
 
-        /* Bloque de configuración general del turno */
+        /* ==========================================
+           PANEL DE CONTROL TEAM LEADER
+           ========================================== */
         .header-controls {
             background-color: #fffaf0;
-            border-left: 4px solid var(--leader-color);
-            padding: 15px;
+            border: 1px solid #fbd38d;
+            border-left: 6px solid var(--leader-color);
+            padding: 20px;
             border-radius: 6px;
-            margin-bottom: 25px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
 
-        .control-group {
+        .leader-panel-header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 12px;
+            justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid #fbd38d;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
         }
 
-        .control-group:last-child { margin-bottom: 0; }
+        .leader-title {
+            font-size: 1.1em;
+            font-weight: 800;
+            color: var(--leader-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .leader-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 
         input, select, button {
-            padding: 8px 10px;
+            padding: 8px 12px;
             border: 1px solid var(--border);
             border-radius: 4px;
             font-size: 13px;
+            outline: none;
         }
+        
+        input:focus, select:focus { border-color: var(--accent); }
 
         input { flex: 1; min-width: 140px; }
         input[type="time"] { min-width: auto; width: 100px; }
         
         button {
             background-color: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
+            color: white; border: none; cursor: pointer;
+            font-weight: 600; transition: all 0.2s;
         }
 
         button:hover { opacity: 0.9; }
         .btn-accent { background-color: var(--accent); }
         .btn-leader { background-color: var(--leader-color); color: #fff; }
-        .btn-clear { background-color: var(--danger); }
-        .btn-outline { background-color: transparent; border: 1px solid var(--leader-color); color: var(--leader-color); }
+        .btn-clear { background-color: var(--danger); color: white; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--comment); color: var(--comment); }
+        .btn-outline:hover { background-color: var(--comment); color: white; }
+        
+        .btn-danger-outline { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+        .btn-danger-outline:hover { background: var(--danger); color: white; }
 
         /* Etiquetas de técnicos */
         .tech-pill {
             background-color: var(--primary);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: bold;
+            color: white; padding: 6px 12px;
+            border-radius: 15px; font-size: 11px;
+            display: flex; align-items: center; gap: 8px; font-weight: bold;
         }
+        .tech-pill span { cursor: pointer; color: #fc8181; font-size: 14px; line-height: 1; transition: 0.2s;}
+        .tech-pill span:hover { color: #fff; }
 
-        .tech-pill span { cursor: pointer; color: #fc8181; font-weight: bold; font-size: 14px; line-height: 1; }
-        .tech-pill span:hover { color: #e53e3e; }
-
-        .document-header { font-size: 1.4em; font-weight: 800; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        .document-header { font-size: 1.4em; font-weight: 800; margin-bottom: 25px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
         
         .avion-section { margin-bottom: 30px; }
 
         .avion-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: flex-start;
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 4px;
-            flex-wrap: wrap;
-            gap: 15px;
-            border-left: 4px solid var(--primary);
+            font-size: 1.2em; font-weight: bold; margin-bottom: 15px;
+            display: flex; align-items: flex-start; background: #f8fafc;
+            padding: 12px; border-radius: 4px; flex-wrap: wrap; gap: 15px;
+            border-left: 4px solid var(--primary); border: 1px solid var(--border); border-left-width: 4px;
         }
 
         .avion-info-main { flex: 1; min-width: 250px; }
@@ -148,19 +158,12 @@
         .tango-link:hover { background-color: rgba(56, 178, 172, 0.1); }
 
         .task-item {
-            display: flex;
-            margin-bottom: 12px;
-            padding: 12px;
-            align-items: flex-start;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            border: 1px solid var(--border);
-            background-color: #ffffff;
+            display: flex; margin-bottom: 10px; padding: 12px;
+            align-items: flex-start; border-radius: 6px; transition: all 0.3s ease;
+            border: 1px solid var(--border); background-color: #ffffff;
         }
 
-        /* ==========================================
-           MODOS URGENTE / AYUDA (RESPIRACIÓN INTELIGENTE)
-           ========================================== */
+        /* Modos Urgente / Ayuda */
         @keyframes pulseDanger { 
             0% { border-left-color: #fc8181; box-shadow: inset 4px 0 0 transparent; } 
             50% { border-left-color: var(--danger); box-shadow: inset 6px 0 15px rgba(229,62,62,0.15); } 
@@ -177,21 +180,9 @@
             100% { border-left-color: var(--danger); box-shadow: inset 4px 0 0 transparent; } 
         }
 
-        .task-item.priority { 
-            border-left: 4px solid var(--danger); 
-            background-color: #fffafb; 
-            animation: pulseDanger 1.8s infinite ease-in-out; 
-        }
-        .task-item.help-needed { 
-            border-left: 4px solid var(--help); 
-            background-color: #fffdfa; 
-            animation: pulseHelp 1.8s infinite ease-in-out; 
-        }
-        .task-item.priority.help-needed { 
-            border-left: 4px solid var(--danger); 
-            background: linear-gradient(90deg, #fffafb 0%, #fffdfa 100%);
-            animation: pulseBoth 1.8s infinite ease-in-out; 
-        }
+        .task-item.priority { border-left: 4px solid var(--danger); background-color: #fffafb; animation: pulseDanger 1.8s infinite ease-in-out; }
+        .task-item.help-needed { border-left: 4px solid var(--help); background-color: #fffdfa; animation: pulseHelp 1.8s infinite ease-in-out; }
+        .task-item.priority.help-needed { border-left: 4px solid var(--danger); background: linear-gradient(90deg, #fffafb 0%, #fffdfa 100%); animation: pulseBoth 1.8s infinite ease-in-out; }
 
         .priority-badge { color: var(--danger); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
         .help-badge { color: var(--help); font-weight: 800; font-size: 0.85em; margin-left: 8px; }
@@ -201,33 +192,26 @@
             box-sizing: border-box; border: 2px solid var(--primary);
             background-color: white; margin-right: 15px; margin-top: 2px;
             cursor: pointer; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: transparent; font-size: 16px; transition: all 0.2s; user-select: none;
-            border-radius: 4px;
+            font-weight: bold; color: transparent; font-size: 16px; transition: all 0.2s; user-select: none; border-radius: 4px;
         }
 
         .task-item.completed .status-toggle { background-color: var(--accent); border-color: var(--accent); color: white; }
-        .task-item.completed { animation: none !important; border-left: 1px solid var(--border) !important; background-color: transparent !important; box-shadow: none !important;}
+        .task-item.completed { animation: none !important; border-left: 1px solid var(--border) !important; background-color: #f8fafc !important; box-shadow: none !important; opacity: 0.8;}
         .task-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .task-info { width: 100%; transition: all 0.3s ease; }
-        .task-item.completed .task-info { opacity: 0.5; text-decoration: line-through; }
-        .task-item.completed .tango-link { text-decoration: line-through; color: var(--primary); }
+        .task-item.completed .task-info { text-decoration: line-through; color: var(--comment); }
+        .task-item.completed .tango-link { text-decoration: line-through; color: var(--comment); }
 
         .task-desc { font-weight: 500; font-size: 1.05em; line-height: 1.4; }
         .task-techs { font-size: 0.85em; font-weight: 700; color: #4a5568; margin-top: 6px; }
         .task-comment { font-size: 0.85em; color: var(--comment); margin-top: 6px; font-style: italic; font-weight: 600; }
 
-        /* ==========================================
-           BOTONERAS TÁCTICAS UNIFICADAS
-           ========================================== */
-        .action-bar { 
-            display: flex; flex-wrap: wrap; gap: 8px; 
-            margin-top: 10px; align-items: stretch; justify-content: flex-end; 
-        }
-        
+        /* Botoneras */
+        .action-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: stretch; justify-content: flex-end; }
         .action-bar.avion-bar { margin-top: 0; }
 
         .action-btn {
-            flex: 1; min-width: 90px; max-width: 140px;
+            flex: 1; min-width: 90px; max-width: 130px;
             padding: 6px 8px; font-size: 11px; font-weight: 700;
             border-radius: 4px; border: 1px solid var(--border);
             background: #ffffff; color: var(--primary);
@@ -235,43 +219,60 @@
             display: flex; align-items: center; justify-content: center; gap: 4px;
         }
 
-        .action-btn:hover { background: var(--light-gray); border-color: #cbd5e0; }
-        
-        /* Botones Activos (Ayuda / Urgente) */
+        .action-btn:hover { background: var(--light-gray); border-color: #a0aec0; }
         .action-btn.active-danger { background: var(--danger); color: white; border-color: var(--danger); }
-        .action-btn.active-danger:hover { opacity: 0.8; background: var(--danger); }
-        
         .action-btn.active-help { background: var(--help); color: white; border-color: var(--help); }
-        .action-btn.active-help:hover { opacity: 0.8; background: var(--help); }
-        
-        /* Resaltados Especiales */
         .btn-highlight { color: var(--accent); border-color: var(--accent); background-color: #f0fbfb; }
         .btn-highlight:hover { background-color: var(--accent); color: white; }
 
-        /* Modal Styles */
+        /* ==========================================
+           MODALS (VENTANAS FLOTANTES)
+           ========================================== */
         .modal {
             display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(47, 62, 70, 0.7); backdrop-filter: blur(2px);
+            background-color: rgba(47, 62, 70, 0.7); backdrop-filter: blur(3px);
         }
+        
         .modal-content {
-            background-color: var(--bg); margin: 5% auto; padding: 20px;
+            background-color: var(--bg); margin: 5% auto; padding: 25px;
             border: 1px solid var(--border); width: 90%; max-width: 500px; border-radius: 8px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        .modal-header { font-weight: bold; font-size: 1.2em; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--leader-color); padding-bottom: 8px;}
-        .modal-content input, .modal-content select { width: 100%; margin-bottom: 12px; box-sizing: border-box; }
         
-        .modal-row { display: flex; gap: 10px; }
+        .modal-header { 
+            font-weight: 800; font-size: 1.2em; margin-bottom: 20px; 
+            color: var(--primary); border-bottom: 2px solid var(--leader-color); padding-bottom: 10px;
+        }
+        
+        .modal-content input, .modal-content select { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        .modal-row { display: flex; gap: 12px; }
         .modal-row > * { flex: 1; }
 
-        .tech-list-modal {
-            border: 1px solid var(--border); padding: 10px; border-radius: 4px; 
-            max-height: 150px; overflow-y: auto; margin-bottom: 15px; background: #f8fafc;
+        /* Cuadrícula Táctica para Asignar Técnicos */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px; max-height: 160px; overflow-y: auto;
+            margin-bottom: 20px; padding: 2px;
         }
-        .tech-list-modal label { display: block; margin-bottom: 8px; font-size: 13px; cursor: pointer; font-weight: 600; color: #4a5568; }
-        .tech-list-modal label:hover { color: var(--primary); }
+
+        .tech-checkbox-label {
+            display: flex; align-items: center; gap: 8px;
+            background: #f8fafc; border: 1px solid var(--border); padding: 8px 10px;
+            border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 700;
+            transition: all 0.2s; user-select: none; color: var(--comment);
+        }
+
+        .tech-checkbox-label:hover { border-color: var(--accent); color: var(--primary); }
+        .tech-checkbox-label:has(input:checked) { border-color: var(--accent); background: #f0fbfb; color: var(--accent); }
+        .tech-checkbox-label input { margin: 0; width: auto; cursor: pointer; }
+
+        /* Pie del Modal */
+        .modal-footer { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-top: 10px; padding-top: 20px; border-top: 1px solid var(--border);
+        }
         
-        .modal-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
         .modal-actions-right { display: flex; gap: 10px; }
 
         @media print {
@@ -280,7 +281,7 @@
             body { padding: 0; background-color: white; font-size: 11px; }
             .document-header { font-size: 1.2em; margin-bottom: 15px; padding-bottom: 5px; }
             .avion-section { margin-bottom: 20px; }
-            .avion-title { font-size: 1.1em; margin-bottom: 8px; padding: 6px; flex-direction: column; align-items: flex-start; border-left: 2px solid var(--primary); }
+            .avion-title { font-size: 1.1em; margin-bottom: 8px; padding: 6px; flex-direction: column; align-items: flex-start; border-left: 2px solid var(--primary); border:none; border-left: 2px solid var(--primary); }
             .avion-pos, .avion-times { padding: 0; background: none; border-radius: 0; }
             .task-item { margin-bottom: 6px; padding: 0px 5px; border: none; animation: none !important; background: none !important; box-shadow: none !important; }
             .task-item.completed .task-info { opacity: 0.85 !important; text-decoration: line-through; color: #333; }
@@ -295,28 +296,36 @@
 <div class="container">
     <div class="top-bar no-print">
         <button id="btn-mode-toggle" class="btn-accent btn-top" onclick="toggleMode()">MODO TÉCNICO</button>
-        <button class="btn-top" onclick="window.print()" style="background-color: #718096;">🖨️ IMPRIMIR / PDF</button>
+        <button class="btn-top" onclick="window.print()" style="background-color: #718096; color:white; border:none;">🖨️ IMPRIMIR HOJA</button>
     </div>
 
-    <!-- CONFIGURACIÓN DE TURNO -->
+    <!-- CONFIGURACIÓN DE TURNO (TEAM LEADER) -->
     <div class="header-controls leader-only no-print">
-        <div class="control-group">
-            <strong>AJUSTES DE TURNO:</strong>
-            <select id="in-turno" onchange="updateHeader()">
-                <option value="Turno Día">Día</option>
-                <option value="Turno Tarde">Tarde</option>
-                <option value="Turno Noche">Noche</option>
-            </select>
-            <input type="date" id="in-fecha" onchange="updateHeader()">
-            <input type="text" id="in-jefe" placeholder="JEFE DE TURNO" oninput="updateHeader()">
+        <div class="leader-panel-header">
+            <div class="leader-title">⚙️ PANEL DE CONTROL TEAM LEADER</div>
+            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 6px 12px; font-size: 11px;">⚠️ BORRAR HOJA ENTERA</button>
         </div>
-        <div class="control-group" style="margin-top: 10px; border-top: 1px dashed #cbd5e0; padding-top: 10px;">
-            <strong>TÉCNICOS PRESENTES:</strong>
-            <input type="text" id="in-new-tech" placeholder="AGREGAR APELLIDO (EJ: ROJAS)" onkeypress="if(event.key === 'Enter') addTech()">
-            <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
-            <button class="btn-clear" onclick="clearAllData()" style="margin-left: auto;">🗑️ BORRAR HOJA ENTERA</button>
+
+        <div class="leader-grid">
+            <div class="control-group">
+                <span style="font-size: 11px; font-weight: bold; color: var(--comment); width: 60px;">TURNO:</span>
+                <select id="in-turno" onchange="updateHeader()" style="max-width: 140px;">
+                    <option value="Turno Día">DÍA</option>
+                    <option value="Turno Tarde">TARDE</option>
+                    <option value="Turno Noche">NOCHE</option>
+                </select>
+                <input type="date" id="in-fecha" onchange="updateHeader()" style="max-width: 140px;">
+                <input type="text" id="in-jefe" placeholder="NOMBRE JEFE DE TURNO" oninput="updateHeader()">
+            </div>
+            
+            <div class="control-group">
+                <span style="font-size: 11px; font-weight: bold; color: var(--comment); width: 60px;">TÉCNICOS:</span>
+                <input type="text" id="in-new-tech" placeholder="AGREGAR APELLIDO (EJ: ROJAS)" onkeypress="if(event.key === 'Enter') addTech()" style="max-width: 290px;">
+                <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
+            </div>
+
+            <div class="control-group" id="tech-pills-container" style="gap: 8px; margin-left: 70px;"></div>
         </div>
-        <div class="control-group" id="tech-pills-container" style="gap: 8px; margin-top: 10px;"></div>
     </div>
 
     <!-- ÁREA PRINCIPAL -->
@@ -324,12 +333,12 @@
         <div class="document-header" id="display-header"></div>
         <div id="aviones-container"></div>
         <div class="leader-only no-print" style="margin-top: 20px;">
-            <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 12px;">+ AGREGAR NUEVO AVIÓN A LA HOJA</button>
+            <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 14px; font-size: 14px;">+ AGREGAR NUEVO AVIÓN A LA HOJA</button>
         </div>
     </div>
 </div>
 
-<!-- ================= MODALS ================= -->
+<!-- ================= MODALS (VENTANAS FLOTANTES) ================= -->
 
 <!-- Modal Agregar Avión -->
 <div id="add-avion-modal" class="modal">
@@ -346,7 +355,7 @@
         </div>
         <input type="text" id="add-ac-comment" placeholder="NOTA DEL AVIÓN (OPCIONAL)">
         
-        <div class="modal-actions">
+        <div class="modal-footer">
             <div></div> <!-- Spacer -->
             <div class="modal-actions-right">
                 <button class="btn-outline" onclick="closeModal('add-avion-modal')">CANCELAR</button>
@@ -371,8 +380,8 @@
         </div>
         <input type="text" id="edit-ac-comment" placeholder="NOTA DEL AVIÓN (OPCIONAL)">
         
-        <div class="modal-actions">
-            <button class="btn-clear" onclick="confirmDeleteAvion()">ELIMINAR AVIÓN</button>
+        <div class="modal-footer">
+            <button class="btn-danger-outline" onclick="confirmDeleteAvion()">ELIMINAR AVIÓN</button>
             <div class="modal-actions-right">
                 <button class="btn-outline" onclick="closeModal('edit-avion-modal')">CANCELAR</button>
                 <button class="btn-leader" onclick="saveEditAvion()">GUARDAR CAMBIOS</button>
@@ -388,10 +397,10 @@
         <input type="text" id="add-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA" oninput="detectTangoModal(this, 'add-task-tango')">
         <input type="text" id="add-task-tango" placeholder="TANGO (8 CARACT.)" maxlength="8">
         
-        <div style="font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: 5px;">ASIGNAR TÉCNICOS:</div>
-        <div class="tech-list-modal" id="add-task-techs"></div>
+        <div style="font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: 8px;">ASIGNAR TÉCNICOS:</div>
+        <div class="tech-grid" id="add-task-techs"></div>
         
-        <div class="modal-actions">
+        <div class="modal-footer">
             <div></div> <!-- Spacer -->
             <div class="modal-actions-right">
                 <button class="btn-outline" onclick="closeModal('add-task-modal')">CANCELAR</button>
@@ -408,11 +417,11 @@
         <input type="text" id="edit-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA" oninput="detectTangoModal(this, 'edit-task-tango')">
         <input type="text" id="edit-task-tango" placeholder="TANGO (8 CARACT.)" maxlength="8">
         
-        <div style="font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: 5px;">TÉCNICOS ASIGNADOS:</div>
-        <div class="tech-list-modal" id="edit-task-techs"></div>
+        <div style="font-size: 11px; font-weight: bold; color: var(--comment); margin-bottom: 8px;">TÉCNICOS ASIGNADOS:</div>
+        <div class="tech-grid" id="edit-task-techs"></div>
         
-        <div class="modal-actions">
-            <button class="btn-clear" onclick="confirmDeleteTask()">ELIMINAR TAREA</button>
+        <div class="modal-footer">
+            <button class="btn-danger-outline" onclick="confirmDeleteTask()">ELIMINAR TAREA</button>
             <div class="modal-actions-right">
                 <button class="btn-outline" onclick="closeModal('edit-task-modal')">CANCELAR</button>
                 <button class="btn-leader" onclick="saveEditTask()">GUARDAR CAMBIOS</button>
@@ -513,7 +522,7 @@
     }
 
     function clearAllData() {
-        if(confirm("⚠️ ¿ESTÁS SEGURO DE QUE QUIERES BORRAR TODA LA HOJA DE TURNO? (Los técnicos no se borrarán)")) {
+        if(confirm("⚠️ ¿ESTÁS SEGURO DE QUE QUIERES BORRAR TODA LA HOJA DE TURNO? (Los técnicos agregados no se borrarán)")) {
             avionesData = [];
             saveData(); render();
         }
@@ -572,7 +581,6 @@
             const posDisplay = avion.pos ? `<span class="avion-pos">POSICIÓN: ${avion.pos}</span>` : '';
             const timesDisplay = (avion.start || avion.end) ? `<span class="avion-times">🕒 ${avion.start || '--:--'} - ${avion.end || '--:--'}</span>` : '';
             
-            // Render Cabecera Avión
             let html = `
                 <div class="avion-title">
                     <div class="avion-info-main">
@@ -589,7 +597,6 @@
                 </div>
             `;
 
-            // Render Tareas
             avion.tareas.forEach(t => {
                 let cleanDesc = t.desc; let tangoDisplay = '';
 
@@ -640,6 +647,7 @@
         if (!tarea.done) {
             if (!confirm("¿CONFIRMAS QUE ESTA TAREA ESTÁ COMPLETADA Y CERRADA?")) return;
             tarea.help = false; 
+            tarea.priority = false; // Desactiva urgente al terminar
         } else {
             if (!confirm("¿CONFIRMAS QUE DESEAS REABRIR ESTA TAREA?")) return;
         }
@@ -649,6 +657,7 @@
     function togglePriority(aId, tId) {
         const avion = avionesData.find(a => a.id == aId);
         const tarea = avion.tareas.find(t => t.id == tId);
+        if (tarea.done) return alert("LA TAREA ESTÁ COMPLETADA.");
         const accion = tarea.priority ? "DESACTIVAR" : "ACTIVAR";
         if (!confirm(`¿CONFIRMAS QUE DESEAS ${accion} EL ESTADO URGENTE DE ESTA TAREA?`)) return;
         tarea.priority = !tarea.priority; saveData(); render();
@@ -657,7 +666,7 @@
     function toggleHelp(aId, tId) {
         const avion = avionesData.find(a => a.id == aId);
         const tarea = avion.tareas.find(t => t.id == tId);
-        if (tarea.done) return alert("LA TAREA YA ESTÁ COMPLETADA.");
+        if (tarea.done) return alert("LA TAREA ESTÁ COMPLETADA.");
         const accion = tarea.help ? "DESACTIVAR" : "ACTIVAR";
         if (!confirm(`¿CONFIRMAS QUE DESEAS ${accion} LA SOLICITUD DE APOYO?`)) return;
         tarea.help = !tarea.help; saveData(); render();
@@ -709,7 +718,6 @@
 
     function saveEditAvion() {
         const avion = avionesData.find(a => a.id == editCurrentAvionId);
-        
         const reg = document.getElementById('edit-ac-reg').value.toUpperCase().trim();
         let wp = document.getElementById('edit-ac-wp').value.toUpperCase().trim();
         
@@ -717,8 +725,7 @@
         if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
         if (wp && wp.length !== 8) return alert("EL WP DEBE TENER EXACTAMENTE 8 CARACTERES.");
 
-        avion.reg = reg;
-        avion.wp = wp;
+        avion.reg = reg; avion.wp = wp;
         avion.pos = document.getElementById('edit-ac-pos').value.toUpperCase().trim();
         avion.start = document.getElementById('edit-ac-start').value;
         avion.end = document.getElementById('edit-ac-end').value;
@@ -728,30 +735,40 @@
     }
 
     function confirmDeleteAvion() {
-        if (confirm("¿CONFIRMAS BORRAR ESTE AVIÓN Y TODAS SUS TAREAS ASIGNADAS?")) {
+        if (confirm("⚠️ ¿CONFIRMAS BORRAR ESTE AVIÓN Y TODAS SUS TAREAS ASIGNADAS?")) {
             avionesData = avionesData.filter(a => a.id != editCurrentAvionId);
             saveData(); render(); closeModal('edit-avion-modal');
         }
     }
 
     // ==========================================
-    // FUNCIONES MODAL: TAREAS
+    // FUNCIONES MODAL: TAREAS (CON GRID DE TÉCNICOS)
     // ==========================================
+    function buildTechGrid(containerId, selectedTechsString = "") {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        const currentTechs = selectedTechsString ? selectedTechsString.split(' - ') : [];
+        
+        if (shiftTechs.length === 0) {
+            container.innerHTML = '<div style="font-size:12px; color:var(--comment); padding:10px;">NO HAY TÉCNICOS AGREGADOS AL TURNO</div>';
+        } else {
+            shiftTechs.forEach(tech => {
+                const isChecked = currentTechs.includes(tech) ? "checked" : "";
+                container.innerHTML += `
+                    <label class="tech-checkbox-label">
+                        <input type="checkbox" class="${containerId}-cb" value="${tech}" ${isChecked}>
+                        <span>${tech}</span>
+                    </label>
+                `;
+            });
+        }
+    }
+
     function openAddTaskModal(avionId) {
         editCurrentAvionId = avionId;
         document.getElementById('add-task-desc').value = '';
         document.getElementById('add-task-tango').value = '';
-        
-        const container = document.getElementById('add-task-techs');
-        container.innerHTML = '';
-        
-        if (shiftTechs.length === 0) {
-            container.innerHTML = '<div style="font-size:12px; color:var(--comment);">NO HAY TÉCNICOS AGREGADOS A LA HOJA</div>';
-        } else {
-            shiftTechs.forEach(tech => {
-                container.innerHTML += `<label><input type="checkbox" class="add-tech-cb" value="${tech}"> ${tech}</label>`;
-            });
-        }
+        buildTechGrid('add-task-techs', "");
         document.getElementById('add-task-modal').style.display = 'block';
     }
 
@@ -764,7 +781,7 @@
         if (tango.length === 5 && !tango.startsWith('T00')) tango = 'T00' + tango;
         if (tango && tango.length !== 8) return alert("EL TANGO DEBE TENER EXACTAMENTE 8 CARACTERES.");
 
-        const checkboxes = document.querySelectorAll('.add-tech-cb:checked');
+        const checkboxes = document.querySelectorAll('.add-task-techs-cb:checked');
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
 
         avion.tareas.push({ id: Date.now(), desc, tango, techs, done: false, priority: false, help: false, comment: "" });
@@ -779,19 +796,8 @@
 
         document.getElementById('edit-task-desc').value = tarea.desc;
         document.getElementById('edit-task-tango').value = tarea.tango || "";
+        buildTechGrid('edit-task-techs', tarea.techs || "");
         
-        const container = document.getElementById('edit-task-techs');
-        container.innerHTML = '';
-        const currentTechs = tarea.techs ? tarea.techs.split(' - ') : [];
-        
-        if (shiftTechs.length === 0) {
-            container.innerHTML = '<div style="font-size:12px; color:var(--comment);">NO HAY TÉCNICOS AGREGADOS A LA HOJA</div>';
-        } else {
-            shiftTechs.forEach(tech => {
-                const isChecked = currentTechs.includes(tech) ? "checked" : "";
-                container.innerHTML += `<label><input type="checkbox" class="edit-tech-cb" value="${tech}" ${isChecked}> ${tech}</label>`;
-            });
-        }
         document.getElementById('edit-task-modal').style.display = 'block';
     }
 
@@ -806,18 +812,15 @@
         if (tango && tango.length !== 8) return alert("EL TANGO DEBE TENER EXACTAMENTE 8 CARACTERES.");
         if (tango && !tango.startsWith('T00')) return alert("EL TANGO DEBE EMPEZAR CON 'T00'.");
 
-        const checkboxes = document.querySelectorAll('.edit-tech-cb:checked');
+        const checkboxes = document.querySelectorAll('.edit-task-techs-cb:checked');
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
 
-        tarea.desc = desc;
-        tarea.tango = tango;
-        tarea.techs = techs;
-
+        tarea.desc = desc; tarea.tango = tango; tarea.techs = techs;
         saveData(); render(); closeModal('edit-task-modal');
     }
 
     function confirmDeleteTask() {
-        if (confirm("¿CONFIRMAS BORRAR ESTA TAREA?")) {
+        if (confirm("⚠️ ¿CONFIRMAS BORRAR ESTA TAREA?")) {
             const avion = avionesData.find(a => a.id == editCurrentAvionId);
             avion.tareas = avion.tareas.filter(t => t.id != editCurrentTaskId);
             saveData(); render(); closeModal('edit-task-modal');
