@@ -84,7 +84,7 @@
         .btn-danger-outline { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
         .btn-danger-outline:hover { background: var(--danger); color: white; }
 
-        /* Etiquetas de técnicos (Mejoradas) */
+        /* Etiquetas de técnicos */
         #tech-pills-container {
             display: flex; flex-wrap: wrap; gap: 8px; width: 100%;
             padding: 10px; background: rgba(255,255,255,0.5); border-radius: 4px; border: 1px dashed #cbd5e0;
@@ -161,7 +161,7 @@
         .task-comment { font-size: 0.85em; color: var(--comment); margin-top: 6px; font-style: italic; font-weight: 600; }
 
         /* ==========================================
-           BOTONERAS TÁCTICAS (TAMAÑOS EXACTOS)
+           BOTONERAS TÁCTICAS
            ========================================== */
         .action-bar { 
             display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; 
@@ -275,7 +275,6 @@
                 <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
             </div>
 
-            <!-- Contenedor ordenado para Técnicos -->
             <div id="tech-pills-container"></div>
         </div>
     </div>
@@ -290,7 +289,7 @@
     </div>
 </div>
 
-<!-- ================= MODALS (VENTANAS FLOTANTES TÁCTICAS) ================= -->
+<!-- ================= MODALS ================= -->
 
 <div id="confirm-modal" class="modal">
     <div class="modal-content" style="max-width: 350px; text-align: center;">
@@ -390,10 +389,11 @@
     </div>
 </div>
 
-<!-- ================= SCRIPT Y FIREBASE REALTIME ================= -->
+<!-- ================= SCRIPT Y FIREBASE REALTIME + AUTH ================= -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyADC1Wwcypek8g1gwOTcgqKskpqiTo0-oM",
@@ -407,8 +407,22 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    // Ya no forzamos la selección de cuenta para que los dispositivos recuerden la sesión.
 
-    // Referencias limpias y directas
+    // ⬇️⬇️⬇️ AGREGA LOS CORREOS AUTORIZADOS AQUÍ (EN MINÚSCULAS) ⬇️⬇️⬇️
+    const correosAutorizados = [
+        "ndfuentesa@gmail.com",
+        "nelson.fuentes@latam.com",
+        "hector.vargas@latam.com",
+        "richard.shenk@latam.com",
+        "pablo.monti@latam.com",
+        "marco.santelices@latam.com",
+        "pamela.perezs@latam.com"
+    ];
+    // ⬆️⬆️⬆️ ======================================================= ⬆️⬆️⬆️
+
     const dbRefs = {
         aviones: ref(db, 'mantenimiento/aviones'),
         techs: ref(db, 'mantenimiento/techs'),
@@ -436,7 +450,6 @@
     onValue(dbRefs.header, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-            // Evita sobreescribir el campo si el líder lo está editando
             if (document.activeElement.id !== 'in-turno') document.getElementById('in-turno').value = data.turno || 'Turno Día';
             if (document.activeElement.id !== 'in-fecha') document.getElementById('in-fecha').value = data.fecha || '';
             if (document.activeElement.id !== 'in-jefe') document.getElementById('in-jefe').value = data.jefe || '';
@@ -451,7 +464,6 @@
         }
     });
 
-    // Escritura asíncrona
     function saveData() { set(dbRefs.aviones, avionesData); }
     function saveTechs() { set(dbRefs.techs, shiftTechs); }
     function updateHeader() {
@@ -491,7 +503,6 @@
         const name = input.value.trim().toUpperCase();
         if (!name) return;
         if (shiftTechs.includes(name)) return showConfirm("ESTE TÉCNICO YA ESTÁ EN LA LISTA.", null);
-
         shiftTechs.push(name);
         shiftTechs.sort(); input.value = '';
         saveTechs();
@@ -516,11 +527,42 @@
         });
     }
 
-    function toggleMode() {
-        isTeamLeader = !isTeamLeader; const body = document.body; const btnToggle = document.getElementById('btn-mode-toggle');
-        if (isTeamLeader) { body.classList.add('team-leader-mode'); btnToggle.innerText = "MODO TEAM LEADER"; btnToggle.style.backgroundColor = "var(--leader-color)";
-        } else { body.classList.remove('team-leader-mode'); btnToggle.innerText = "MODO TÉCNICO"; btnToggle.style.backgroundColor = "var(--accent)"; }
-        render(); 
+    // 🛡️ LÓGICA DE AUTENTICACIÓN PARA EL MODO LEADER
+    async function toggleMode() {
+        const body = document.body; 
+        const btnToggle = document.getElementById('btn-mode-toggle');
+
+        if (isTeamLeader) {
+            // Apagar modo Leader (SOLO apaga la interfaz, NO cierra la sesión de Google)
+            isTeamLeader = false;
+            body.classList.remove('team-leader-mode'); 
+            btnToggle.innerText = "MODO TÉCNICO"; 
+            btnToggle.style.backgroundColor = "var(--accent)";
+            render(); 
+        } else {
+            // Encender modo Leader
+            try {
+                // Abre el popup. Si el navegador ya recuerda la sesión, el popup se cierra casi al instante.
+                const result = await signInWithPopup(auth, provider);
+                const userEmail = result.user.email.toLowerCase();
+
+                if (correosAutorizados.includes(userEmail)) {
+                    isTeamLeader = true;
+                    body.classList.add('team-leader-mode'); 
+                    btnToggle.innerText = "MODO TEAM LEADER"; 
+                    btnToggle.style.backgroundColor = "var(--leader-color)";
+                    render();
+                } else {
+                    // Expulsión de seguridad: cierra la sesión si el correo no está en la lista blanca
+                    await signOut(auth); 
+                    showConfirm(`ACCESO DENEGADO.\nEl correo ${userEmail} no tiene permisos.`, null);
+                }
+            } catch (error) {
+                if (error.code !== 'auth/popup-closed-by-user') {
+                    console.error("Error táctico de autenticación:", error);
+                }
+            }
+        }
     }
 
     function clearAllData() {
@@ -789,6 +831,5 @@
     });
 
 </script>
-
 </body>
 </html>
