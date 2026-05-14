@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Panel de Tareas Mantenimiento - LATAM</title>
     <style>
         :root {
             --primary: #2F3E46; 
@@ -171,8 +171,8 @@
         .action-bar.avion-bar { margin-top: 0; justify-content: flex-end; width: auto; }
 
         .action-btn {
-            flex: 1 1 0%; /* OBLIGA A QUE TODOS SEAN EXACTAMENTE DEL MISMO TAMAÑO */
-            min-width: 60px; /* Permite que se encojan equitativamente en móviles */
+            flex: 1 1 0%; 
+            min-width: 60px; 
             padding: 6px 4px; font-size: 10px; font-weight: 700;
             border-radius: 3px; border: 1px solid var(--border);
             background: #ffffff; color: var(--primary);
@@ -203,7 +203,6 @@
         .modal-row { display: flex; gap: 10px; }
         .modal-row > * { flex: 1; }
 
-        /* Grid de Técnicos Corregido y Organizado */
         .tech-grid {
             display: flex; flex-wrap: wrap;
             gap: 8px; max-height: 180px; overflow-y: auto; margin-bottom: 15px; padding: 4px;
@@ -222,12 +221,8 @@
             box-shadow: 0 2px 5px rgba(56, 178, 172, 0.3);
         }
         .tech-checkbox-label input { display: none; }
-        
-        .tech-checkbox-label span { 
-            word-wrap: break-word; white-space: normal; line-height: 1.2;
-        }
+        .tech-checkbox-label span { word-wrap: break-word; white-space: normal; line-height: 1.2; }
 
-        /* Botones modales unificados */
         .modal-footer { display: flex; gap: 8px; margin-top: 5px; padding-top: 15px; border-top: 1px solid var(--border); }
         .btn-modal-action { flex: 1; padding: 10px 0; font-size: 11px; text-align: center; display: flex; justify-content: center; align-items: center; }
 
@@ -287,7 +282,7 @@
 
     <!-- ÁREA PRINCIPAL -->
     <div id="print-area">
-        <div class="document-header" id="display-header"></div>
+        <div class="document-header" id="display-header">CARGANDO DATOS...</div>
         <div id="aviones-container"></div>
         <div class="leader-only no-print" style="margin-top: 20px;">
             <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 12px; font-size: 12px;">+ AGREGAR AVIÓN</button>
@@ -297,7 +292,6 @@
 
 <!-- ================= MODALS (VENTANAS FLOTANTES TÁCTICAS) ================= -->
 
-<!-- Modal Confirmación General -->
 <div id="confirm-modal" class="modal">
     <div class="modal-content" style="max-width: 350px; text-align: center;">
         <div class="modal-header" style="border:none; margin-bottom:5px; color:var(--leader-color);">⚠️ CONFIRMACIÓN</div>
@@ -309,7 +303,6 @@
     </div>
 </div>
 
-<!-- Modal Ingreso de Notas (Reemplaza prompt) -->
 <div id="prompt-modal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
         <div class="modal-header" id="prompt-title" style="margin-bottom:10px; border:none; padding-bottom:0;">INGRESA LA NOTA</div>
@@ -321,7 +314,6 @@
     </div>
 </div>
 
-<!-- Modal Agregar Avión -->
 <div id="add-avion-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✈️ AGREGAR NUEVO AVIÓN</div>
@@ -343,7 +335,6 @@
     </div>
 </div>
 
-<!-- Modal Editar Avión -->
 <div id="edit-avion-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ EDITAR AVIÓN</div>
@@ -366,7 +357,6 @@
     </div>
 </div>
 
-<!-- Modal Agregar Tarea -->
 <div id="add-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">📝 AGREGAR TAREA</div>
@@ -383,7 +373,6 @@
     </div>
 </div>
 
-<!-- Modal Editar Tarea -->
 <div id="edit-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ EDITAR TAREA</div>
@@ -401,21 +390,78 @@
     </div>
 </div>
 
-<script>
+<!-- ================= SCRIPT Y FIREBASE REALTIME ================= -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyADC1Wwcypek8g1gwOTcgqKskpqiTo0-oM",
+      authDomain: "programacion-diaria-3dddb.firebaseapp.com",
+      databaseURL: "https://programacion-diaria-3dddb-default-rtdb.firebaseio.com",
+      projectId: "programacion-diaria-3dddb",
+      storageBucket: "programacion-diaria-3dddb.firebasestorage.app",
+      messagingSenderId: "449926089536",
+      appId: "1:449926089536:web:052ba8ea546f4d39b708a5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Referencias limpias y directas
+    const dbRefs = {
+        aviones: ref(db, 'mantenimiento/aviones'),
+        techs: ref(db, 'mantenimiento/techs'),
+        header: ref(db, 'mantenimiento/header')
+    };
+
     let avionesData = [];
     let shiftTechs = []; 
     let isTeamLeader = false;
     let editCurrentAvionId = null;
     let editCurrentTaskId = null;
     const MAINTENIX_URL = "https://maintenix.lan.com/maintenix/common/ToDoList.jsp";
-    
-    const STORAGE_KEY = 'latam_line_maintenance_data';
-    const KEY_TURNO = 'latam_header_turno';
-    const KEY_FECHA = 'latam_header_fecha';
-    const KEY_JEFE = 'latam_header_jefe';
-    const KEY_TECHS = 'latam_shift_techs';
 
-    // Sistema de Confirmación y Prompt Modal
+    // --- SINCRONIZACIÓN EN TIEMPO REAL ---
+    onValue(dbRefs.aviones, (snapshot) => {
+        avionesData = snapshot.val() || [];
+        render();
+    });
+
+    onValue(dbRefs.techs, (snapshot) => {
+        shiftTechs = snapshot.val() || [];
+        renderTechPills();
+    });
+
+    onValue(dbRefs.header, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Evita sobreescribir el campo si el líder lo está editando
+            if (document.activeElement.id !== 'in-turno') document.getElementById('in-turno').value = data.turno || 'Turno Día';
+            if (document.activeElement.id !== 'in-fecha') document.getElementById('in-fecha').value = data.fecha || '';
+            if (document.activeElement.id !== 'in-jefe') document.getElementById('in-jefe').value = data.jefe || '';
+            
+            let fechaDisplay = "";
+            if(data.fecha) {
+                 fechaDisplay = new Date(data.fecha + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+            }
+            document.getElementById('display-header').innerText = `${data.turno || ''} ${fechaDisplay} ${data.jefe ? '- ' + data.jefe : ''}`;
+        } else {
+            document.getElementById('display-header').innerText = `CONFIGURAR TURNO`;
+        }
+    });
+
+    // Escritura asíncrona
+    function saveData() { set(dbRefs.aviones, avionesData); }
+    function saveTechs() { set(dbRefs.techs, shiftTechs); }
+    function updateHeader() {
+        const turno = document.getElementById('in-turno').value;
+        const fecha = document.getElementById('in-fecha').value;
+        const jefe = document.getElementById('in-jefe').value.toUpperCase();
+        set(dbRefs.header, { turno, fecha, jefe });
+    }
+
+    // --- LÓGICA DE INTERFAZ ---
     let confirmCallback = null;
     function showConfirm(message, callback) {
         document.getElementById('confirm-message').innerText = message;
@@ -440,12 +486,6 @@
         closePromptModal();
     };
 
-    loadData();
-    updateHeader();
-
-    // ==========================================
-    // LÓGICA GENERAL Y TÉCNICOS
-    // ==========================================
     function addTech() {
         const input = document.getElementById('in-new-tech');
         const name = input.value.trim().toUpperCase();
@@ -454,16 +494,14 @@
 
         shiftTechs.push(name);
         shiftTechs.sort(); input.value = '';
-        saveTechs(); renderTechPills();
+        saveTechs();
     }
 
     function removeTech(index) {
         showConfirm(`¿CONFIRMAS ELIMINAR A ${shiftTechs[index]} DEL TURNO?`, () => {
-            shiftTechs.splice(index, 1); saveTechs(); renderTechPills();
+            shiftTechs.splice(index, 1); saveTechs();
         });
     }
-
-    function saveTechs() { localStorage.setItem(KEY_TECHS, JSON.stringify(shiftTechs)); }
 
     function renderTechPills() {
         const container = document.getElementById('tech-pills-container'); container.innerHTML = '';
@@ -485,50 +523,24 @@
         render(); 
     }
 
-    function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(avionesData)); }
-
-    function loadData() {
-        const saved = localStorage.getItem(STORAGE_KEY); if (saved) avionesData = JSON.parse(saved);
-        const savedTurno = localStorage.getItem(KEY_TURNO); if (savedTurno) document.getElementById('in-turno').value = savedTurno;
-        const savedFecha = localStorage.getItem(KEY_FECHA); if (savedFecha) document.getElementById('in-fecha').value = savedFecha; else document.getElementById('in-fecha').valueAsDate = new Date();
-        const savedJefe = localStorage.getItem(KEY_JEFE); if (savedJefe) document.getElementById('in-jefe').value = savedJefe;
-        const savedTechs = localStorage.getItem(KEY_TECHS); if (savedTechs) shiftTechs = JSON.parse(savedTechs);
-        render(); renderTechPills();
-    }
-
     function clearAllData() {
         showConfirm("⚠️ ¿ESTÁS SEGURO DE BORRAR TODA LA HOJA DE TURNO? (Los técnicos se mantendrán)", () => {
-            avionesData = []; saveData(); render();
+            avionesData = []; saveData(); 
         });
     }
 
-    function updateHeader() {
-        const turno = document.getElementById('in-turno').value.toUpperCase();
-        const fechaRaw = document.getElementById('in-fecha').value;
-        const jefe = document.getElementById('in-jefe').value.toUpperCase();
-        localStorage.setItem(KEY_TURNO, turno); localStorage.setItem(KEY_FECHA, fechaRaw); localStorage.setItem(KEY_JEFE, jefe);
-        const fecha = new Date(fechaRaw + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
-        document.getElementById('display-header').innerText = `${turno} ${fecha} ${jefe ? '- ' + jefe : ''}`;
-    }
-
-    // ==========================================
-    // UTILS & FORMATTING
-    // ==========================================
     function formatMatricula(input) {
         let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); 
         if (val.length > 2) input.value = val.substring(0, 2) + '-' + val.substring(2, 5); else input.value = val;
     }
 
-    // Motor Inteligente Formato TANGO (Fuerza T00 siempre al inicio)
     function autoFormatTango(input) {
         let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         if (val === 'T' || val === 'T0' || val === 'T00') {
-            // Permite tipeo inicial
         } else if (val.length > 0 && !val.startsWith('T00')) {
-            val = val.replace(/^T0?0?/, ''); // Limpia si intentan pegar algo como "00HW..."
-            val = 'T00' + val; // Autocompleta
+            val = val.replace(/^T0?0?/, ''); val = 'T00' + val; 
         }
-        input.value = val.substring(0, 8); // Bloquea longitud
+        input.value = val.substring(0, 8); 
     }
 
     async function handleTangoClick(tangoCode) {
@@ -538,9 +550,6 @@
 
     function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
-    // ==========================================
-    // RENDER PRINCIPAL
-    // ==========================================
     function render() {
         const container = document.getElementById('aviones-container'); container.innerHTML = '';
         avionesData.forEach(avion => {
@@ -565,57 +574,56 @@
                 </div>
             `;
 
-            avion.tareas.forEach(t => {
-                let cleanDesc = t.desc; let tangoDisplay = '';
-                if (t.tango) {
-                    const regexClean = new RegExp(`\\[?${t.tango}\\]?`, 'gi');
-                    cleanDesc = cleanDesc.replace(regexClean, '').trim().replace(/[- ]+$/, '').trim();
-                    tangoDisplay = ` [<span class="tango-link" onclick="handleTangoClick('${t.tango}')">${t.tango}</span>]`;
-                }
+            if(avion.tareas) {
+                avion.tareas.forEach(t => {
+                    let cleanDesc = t.desc; let tangoDisplay = '';
+                    if (t.tango) {
+                        const regexClean = new RegExp(`\\[?${t.tango}\\]?`, 'gi');
+                        cleanDesc = cleanDesc.replace(regexClean, '').trim().replace(/[- ]+$/, '').trim();
+                        tangoDisplay = ` [<span class="tango-link" onclick="handleTangoClick('${t.tango}')">${t.tango}</span>]`;
+                    }
 
-                const priorityLabel = t.priority ? '<span class="priority-badge">🔥 URGENTE</span>' : '';
-                const helpLabel = t.help ? '<span class="help-badge">🆘 APOYO</span>' : '';
+                    const priorityLabel = t.priority ? '<span class="priority-badge">🔥 URGENTE</span>' : '';
+                    const helpLabel = t.help ? '<span class="help-badge">🆘 APOYO</span>' : '';
 
-                html += `
-                    <div class="task-item ${t.done ? 'completed' : ''} ${t.priority ? 'priority' : ''} ${t.help ? 'help-needed' : ''}">
-                        <div class="status-toggle no-print" onclick="toggleTask(${avion.id}, ${t.id})">✓</div>
-                        <div class="task-main">
-                            <div class="task-info">
-                                <div class="task-desc">- ${cleanDesc} ${tangoDisplay} ${priorityLabel} ${helpLabel}</div>
-                                ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
-                                ${t.comment ? `<div class="task-comment">↳ NOTA: ${t.comment}</div>` : ''}
-                            </div>
-                            <div class="action-bar no-print">
-                                <div class="leader-only leader-wrapper">
-                                    <button class="action-btn ${t.priority ? 'active-danger' : ''}" onclick="togglePriority(${avion.id}, ${t.id})">🔥 URGENTE</button>
+                    html += `
+                        <div class="task-item ${t.done ? 'completed' : ''} ${t.priority ? 'priority' : ''} ${t.help ? 'help-needed' : ''}">
+                            <div class="status-toggle no-print" onclick="toggleTask(${avion.id}, ${t.id})">✓</div>
+                            <div class="task-main">
+                                <div class="task-info">
+                                    <div class="task-desc">- ${cleanDesc} ${tangoDisplay} ${priorityLabel} ${helpLabel}</div>
+                                    ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
+                                    ${t.comment ? `<div class="task-comment">↳ NOTA: ${t.comment}</div>` : ''}
                                 </div>
-                                <button class="action-btn ${t.help ? 'active-help' : ''}" onclick="toggleHelp(${avion.id}, ${t.id})">🆘 APOYO</button>
-                                <button class="action-btn" onclick="editTaskComment(${avion.id}, ${t.id})">💬 NOTA</button>
-                                <div class="leader-only leader-wrapper">
-                                    <button class="action-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR</button>
+                                <div class="action-bar no-print">
+                                    <div class="leader-only leader-wrapper">
+                                        <button class="action-btn ${t.priority ? 'active-danger' : ''}" onclick="togglePriority(${avion.id}, ${t.id})">🔥 URGENTE</button>
+                                    </div>
+                                    <button class="action-btn ${t.help ? 'active-help' : ''}" onclick="toggleHelp(${avion.id}, ${t.id})">🆘 APOYO</button>
+                                    <button class="action-btn" onclick="editTaskComment(${avion.id}, ${t.id})">💬 NOTA</button>
+                                    <div class="leader-only leader-wrapper">
+                                        <button class="action-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             div.innerHTML = html; container.appendChild(div);
         });
     }
 
-    // ==========================================
-    // CONTROLES DE ESTADO 
-    // ==========================================
     function toggleTask(aId, tId) {
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         if (!tarea.done) {
             showConfirm("¿CONFIRMAS QUE ESTA TAREA ESTÁ COMPLETADA Y CERRADA?", () => {
-                tarea.help = false; tarea.priority = false; tarea.done = true; saveData(); render(); 
+                tarea.help = false; tarea.priority = false; tarea.done = true; saveData(); 
             });
         } else {
             showConfirm("¿CONFIRMAS QUE DESEAS REABRIR ESTA TAREA?", () => {
-                tarea.done = false; saveData(); render();
+                tarea.done = false; saveData();
             });
         }
     }
@@ -624,19 +632,16 @@
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         if (tarea.done) return showConfirm("LA TAREA ESTÁ COMPLETADA.", null);
         const accion = tarea.priority ? "DESACTIVAR" : "ACTIVAR";
-        showConfirm(`¿CONFIRMAS ${accion} EL ESTADO URGENTE?`, () => { tarea.priority = !tarea.priority; saveData(); render(); });
+        showConfirm(`¿CONFIRMAS ${accion} EL ESTADO URGENTE?`, () => { tarea.priority = !tarea.priority; saveData(); });
     }
 
     function toggleHelp(aId, tId) {
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         if (tarea.done) return showConfirm("LA TAREA ESTÁ COMPLETADA.", null);
         const accion = tarea.help ? "DESACTIVAR" : "ACTIVAR";
-        showConfirm(`¿CONFIRMAS ${accion} LA SOLICITUD DE APOYO?`, () => { tarea.help = !tarea.help; saveData(); render(); });
+        showConfirm(`¿CONFIRMAS ${accion} LA SOLICITUD DE APOYO?`, () => { tarea.help = !tarea.help; saveData(); });
     }
 
-    // ==========================================
-    // FUNCIONES MODAL: AVIÓN
-    // ==========================================
     function openAddAvionModal() {
         document.getElementById('add-ac-reg').value = ''; document.getElementById('add-ac-wp').value = '';
         document.getElementById('add-ac-pos').value = ''; document.getElementById('add-ac-start').value = '';
@@ -657,7 +662,7 @@
         if (wp && wp.length !== 8) return showConfirm("EL WP DEBE TENER 8 CARACTERES (EJ: T00RWT2F)", null);
 
         avionesData.push({ id: Date.now(), reg, wp, pos, start, end, comment, tareas: [] });
-        saveData(); render(); closeModal('add-avion-modal');
+        saveData(); closeModal('add-avion-modal');
     }
 
     function openEditAvionModal(id) {
@@ -680,19 +685,16 @@
         avion.reg = reg; avion.wp = wp; avion.pos = document.getElementById('edit-ac-pos').value.toUpperCase().trim();
         avion.start = document.getElementById('edit-ac-start').value; avion.end = document.getElementById('edit-ac-end').value;
         avion.comment = document.getElementById('edit-ac-comment').value.toUpperCase().trim();
-        saveData(); render(); closeModal('edit-avion-modal');
+        saveData(); closeModal('edit-avion-modal');
     }
 
     function confirmDeleteAvion() {
         showConfirm("¿CONFIRMAS BORRAR ESTE AVIÓN Y TODAS SUS TAREAS?", () => {
             avionesData = avionesData.filter(a => a.id != editCurrentAvionId);
-            saveData(); render(); closeModal('edit-avion-modal');
+            saveData(); closeModal('edit-avion-modal');
         });
     }
 
-    // ==========================================
-    // FUNCIONES MODAL: TAREAS
-    // ==========================================
     function buildTechGrid(containerId, selectedTechsString = "") {
         const container = document.getElementById(containerId); container.innerHTML = '';
         const currentTechs = selectedTechsString ? selectedTechsString.split(' - ') : [];
@@ -718,6 +720,7 @@
 
     function saveAddTask() {
         const avion = avionesData.find(a => a.id == editCurrentAvionId);
+        if(!avion.tareas) avion.tareas = [];
         const desc = document.getElementById('add-task-desc').value.trim().toUpperCase();
         let tango = document.getElementById('add-task-tango').value.trim().toUpperCase();
         
@@ -728,7 +731,7 @@
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
 
         avion.tareas.push({ id: Date.now(), desc, tango, techs, done: false, priority: false, help: false, comment: "" });
-        saveData(); render(); closeModal('add-task-modal');
+        saveData(); closeModal('add-task-modal');
     }
 
     function openEditTaskModal(aId, tId) {
@@ -750,33 +753,41 @@
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
 
         tarea.desc = desc; tarea.tango = tango; tarea.techs = techs;
-        saveData(); render(); closeModal('edit-task-modal');
+        saveData(); closeModal('edit-task-modal');
     }
 
     function confirmDeleteTask() {
         showConfirm("¿CONFIRMAS BORRAR ESTA TAREA?", () => {
             const avion = avionesData.find(a => a.id == editCurrentAvionId);
             avion.tareas = avion.tareas.filter(t => t.id != editCurrentTaskId);
-            saveData(); render(); closeModal('edit-task-modal');
+            saveData(); closeModal('edit-task-modal');
         });
     }
 
-    // ==========================================
-    // NOTAS RÁPIDAS (PROMPT MODAL)
-    // ==========================================
     function editAvionComment(id) {
         const avion = avionesData.find(a => a.id == id);
         showPromptModal("NOTA DEL AVIÓN", avion.comment, (val) => {
-            avion.comment = val; saveData(); render();
+            avion.comment = val; saveData();
         });
     }
 
     function editTaskComment(aId, tId) {
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         showPromptModal("NOTA DE LA TAREA", tarea.comment, (val) => {
-            tarea.comment = val; saveData(); render();
+            tarea.comment = val; saveData();
         });
     }
+
+    // EXPORTAR FUNCIONES AL ÁMBITO GLOBAL PARA EL HTML
+    Object.assign(window, {
+        updateHeader, addTech, removeTech, toggleMode, clearAllData,
+        formatMatricula, autoFormatTango, handleTangoClick, closeModal,
+        toggleTask, togglePriority, toggleHelp,
+        openAddAvionModal, saveAddAvion, openEditAvionModal, saveEditAvion, confirmDeleteAvion,
+        openAddTaskModal, saveAddTask, openEditTaskModal, saveEditTask, confirmDeleteTask,
+        editAvionComment, editTaskComment, closeConfirmModal, closePromptModal
+    });
+
 </script>
 
 </body>
