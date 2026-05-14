@@ -252,7 +252,7 @@
     <div class="header-controls leader-only no-print">
         <div class="leader-panel-header">
             <div class="leader-title">⚙️ PANEL DE CONTROL TEAM LEADER</div>
-            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 6px 10px; font-size: 10px;">⚠️ BORRAR HOJA ENTERA</button>
+            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 6px 10px; font-size: 10px;">⚠️ BORRAR TODO</button>
         </div>
 
         <div class="leader-grid">
@@ -264,12 +264,12 @@
                     <option value="Turno Noche">NOCHE</option>
                 </select>
                 <input type="date" id="in-fecha" onchange="updateHeader()" style="max-width: 130px;">
-                <input type="text" id="in-jefe" placeholder="NOMBRE JEFE DE TURNO" oninput="updateHeader()">
+                <input type="text" id="in-jefe" placeholder="NOMBRE DEL TEAM LEADER" oninput="updateHeader()">
             </div>
             
             <div class="control-group" style="margin-bottom: 5px;">
                 <span style="font-size: 10px; font-weight: bold; color: var(--comment); width: 65px;">TÉCNICOS:</span>
-                <input type="text" id="in-new-tech" placeholder="AGREGAR APELLIDO" onkeypress="if(event.key === 'Enter') addTech()" style="max-width: 270px;">
+                <input type="text" id="in-new-tech" placeholder="NOMBRE DEL TECNICO" onkeypress="if(event.key === 'Enter') addTech()" style="max-width: 270px;">
                 <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
             </div>
 
@@ -283,7 +283,7 @@
         <div class="document-header" id="display-header"></div>
         <div id="aviones-container"></div>
         <div class="leader-only no-print" style="margin-top: 20px;">
-            <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 12px; font-size: 12px;">+ AGREGAR NUEVO AVIÓN A LA HOJA</button>
+            <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 12px; font-size: 12px;">+ AGREGAR AVIÓN</button>
         </div>
     </div>
 </div>
@@ -354,7 +354,7 @@
         <div class="modal-footer">
             <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteAvion()">ELIMINAR AVIÓN</button>
             <button class="btn-outline btn-modal-action" onclick="closeModal('edit-avion-modal')">CANCELAR</button>
-            <button class="btn-leader btn-modal-action" onclick="saveEditAvion()">GUARDAR CAMBIOS</button>
+            <button class="btn-leader btn-modal-action" onclick="saveEditAvion()">GUARDAR</button>
         </div>
     </div>
 </div>
@@ -364,7 +364,7 @@
     <div class="modal-content">
         <div class="modal-header">📝 AGREGAR TAREA</div>
         <input type="text" id="add-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA">
-        <input type="text" id="add-task-tango" placeholder="TANGO (EJ: T00HW68J)" maxlength="8" oninput="autoFormatTango(this)">
+        <input type="text" id="add-task-tango" placeholder="T00..." maxlength="8" oninput="autoFormatTango(this)">
         
         <div style="font-size: 10px; font-weight: bold; color: var(--comment); margin-bottom: 6px;">ASIGNAR TÉCNICOS:</div>
         <div class="tech-grid" id="add-task-techs"></div>
@@ -381,7 +381,7 @@
     <div class="modal-content">
         <div class="modal-header">✏️ EDITAR TAREA</div>
         <input type="text" id="edit-task-desc" placeholder="DESCRIPCIÓN DE LA TAREA">
-        <input type="text" id="edit-task-tango" placeholder="TANGO (EJ: T00HW68J)" maxlength="8" oninput="autoFormatTango(this)">
+        <input type="text" id="edit-task-tango" placeholder="T00..." maxlength="8" oninput="autoFormatTango(this)">
         
         <div style="font-size: 10px; font-weight: bold; color: var(--comment); margin-bottom: 6px;">TÉCNICOS ASIGNADOS:</div>
         <div class="tech-grid" id="edit-task-techs"></div>
@@ -389,7 +389,7 @@
         <div class="modal-footer">
             <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteTask()">ELIMINAR TAREA</button>
             <button class="btn-outline btn-modal-action" onclick="closeModal('edit-task-modal')">CANCELAR</button>
-            <button class="btn-leader btn-modal-action" onclick="saveEditTask()">GUARDAR CAMBIOS</button>
+            <button class="btn-leader btn-modal-action" onclick="saveEditTask()">GUARDAR</button>
         </div>
     </div>
 </div>
@@ -546,7 +546,7 @@
                 <div class="avion-title">
                     <div class="avion-info-main">
                         • ${avion.reg} ${wpDisplay} ${posDisplay} ${timesDisplay}
-                        ${avion.comment ? `<div class="avion-comment">↳ NOTA AVIÓN: ${avion.comment}</div>` : ''}
+                        ${avion.comment ? `<div class="avion-comment">↳ NOTA: ${avion.comment}</div>` : ''}
                     </div>
                     <div class="action-bar avion-bar no-print">
                         <button class="action-btn" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
