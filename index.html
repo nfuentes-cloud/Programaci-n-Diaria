@@ -33,7 +33,7 @@
 
         /* Barra superior general */
         .top-bar {
-            display: flex; justify-content: space-between; margin-bottom: 20px;
+            display: flex; justify-content: space-between; margin-bottom: 10px;
             background-color: var(--light-gray); padding: 12px;
             border-radius: 6px; border: 1px solid var(--border); align-items: center;
         }
@@ -45,6 +45,13 @@
 
         .leader-wrapper { display: contents; } 
         body:not(.team-leader-mode) .leader-only { display: none !important; }
+
+        /* Controles de vista y filtros locales */
+        .view-controls {
+            display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; 
+            background: #f8fafc; padding: 12px; border-radius: 6px; 
+            border: 1px solid var(--border); align-items: center; justify-content: space-between;
+        }
 
         /* ==========================================
            PANEL DE CONTROL TEAM LEADER
@@ -250,6 +257,25 @@
         <button class="btn-top" onclick="window.print()" style="background-color: #718096; color:white; border:none;">🖨️ IMPRIMIR HOJA</button>
     </div>
 
+    <!-- CONTROLES DE VISTA Y FILTRO (LOCAL) -->
+    <div class="view-controls no-print">
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <span style="font-size: 11px; font-weight: bold; color: var(--comment);">MODO DE VISTA:</span>
+            <select id="view-mode-select" onchange="changeViewMode()" style="min-width: 170px; font-weight: bold;">
+                <option value="default">✈️ POR AVIÓN (DEFAULT)</option>
+                <option value="time">🕒 POR HORA DE INICIO</option>
+                <option value="tech">👨‍🔧 AGRUPAR POR TÉCNICO</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <span style="font-size: 11px; font-weight: bold; color: var(--comment);">MI FILTRO LOCAL:</span>
+            <select id="local-tech-filter" onchange="applyLocalFilter()" style="min-width: 160px;">
+                <option value="">TODOS LOS TÉCNICOS</option>
+            </select>
+            <button class="btn-outline" onclick="resetLocalFilter()" style="padding: 6px 10px; font-size: 10px;">RESTABLECER</button>
+        </div>
+    </div>
+
     <!-- CONFIGURACIÓN DE TURNO (TEAM LEADER) -->
     <div class="header-controls leader-only no-print">
         <div class="leader-panel-header">
@@ -359,7 +385,7 @@
 <div id="add-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">📝 AGREGAR TAREA</div>
-        <input type="text" id="add-task-desc" placeholder="TÍTULO DE LA TAREA">
+        <input type="text" id="add-task-desc" placeholder="TÍTULO DE LA TAREA" oninput="handleTaskDescInput(this, 'add-task-tango')">
         <input type="text" id="add-task-tango" placeholder="T00..." maxlength="8" oninput="autoFormatTango(this)">
         
         <div style="font-size: 10px; font-weight: bold; color: var(--comment); margin-bottom: 6px;">ASIGNAR TÉCNICOS:</div>
@@ -375,7 +401,7 @@
 <div id="edit-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ EDITAR TAREA</div>
-        <input type="text" id="edit-task-desc" placeholder="TÍTULO DE LA TAREA">
+        <input type="text" id="edit-task-desc" placeholder="TÍTULO DE LA TAREA" oninput="handleTaskDescInput(this, 'edit-task-tango')">
         <input type="text" id="edit-task-tango" placeholder="T00..." maxlength="8" oninput="autoFormatTango(this)">
         
         <div style="font-size: 10px; font-weight: bold; color: var(--comment); margin-bottom: 6px;">TÉCNICOS ASIGNADOS:</div>
@@ -409,7 +435,6 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
-    // Ya no forzamos la selección de cuenta para que los dispositivos recuerden la sesión.
 
     // ⬇️⬇️⬇️ AGREGA LOS CORREOS AUTORIZADOS AQUÍ (EN MINÚSCULAS) ⬇️⬇️⬇️
     const correosAutorizados = [
@@ -436,6 +461,11 @@
     let editCurrentTaskId = null;
     const MAINTENIX_URL = "https://maintenix.lan.com/maintenix/common/ToDoList.jsp";
 
+    // ESTADOS LOCALES DE VISTA Y FILTRO
+    let currentViewMode = localStorage.getItem('viewMode') || 'default';
+    let currentTechFilter = localStorage.getItem('techFilter') || '';
+    document.getElementById('view-mode-select').value = currentViewMode;
+
     // --- SINCRONIZACIÓN EN TIEMPO REAL ---
     onValue(dbRefs.aviones, (snapshot) => {
         avionesData = snapshot.val() || [];
@@ -445,6 +475,7 @@
     onValue(dbRefs.techs, (snapshot) => {
         shiftTechs = snapshot.val() || [];
         renderTechPills();
+        updateTechFilterDropdown();
     });
 
     onValue(dbRefs.header, (snapshot) => {
@@ -527,22 +558,62 @@
         });
     }
 
-    // 🛡️ LÓGICA DE AUTENTICACIÓN PARA EL MODO LEADER
+    // --- CONTROLES DE VISTA Y FILTRO ---
+    function updateTechFilterDropdown() {
+        const select = document.getElementById('local-tech-filter');
+        select.innerHTML = '<option value="">TODOS LOS TÉCNICOS</option>';
+        shiftTechs.forEach(tech => {
+            const selected = tech === currentTechFilter ? 'selected' : '';
+            select.innerHTML += `<option value="${tech}" ${selected}>${tech}</option>`;
+        });
+    }
+
+    function changeViewMode() {
+        currentViewMode = document.getElementById('view-mode-select').value;
+        localStorage.setItem('viewMode', currentViewMode);
+        render();
+    }
+
+    function applyLocalFilter() {
+        currentTechFilter = document.getElementById('local-tech-filter').value;
+        localStorage.setItem('techFilter', currentTechFilter);
+        render();
+    }
+
+    function resetLocalFilter() {
+        currentTechFilter = '';
+        document.getElementById('local-tech-filter').value = '';
+        localStorage.setItem('techFilter', '');
+        render();
+    }
+
+    function handleTaskDescInput(inputElem, tangoElemId) {
+        let val = inputElem.value;
+        // Detecta patrón T00 seguido de 5 caracteres alfanuméricos al tipear o pegar
+        const regex = /(T00[A-Z0-9]{5})/i;
+        const match = val.match(regex);
+        if (match) {
+            const tangoCode = match[1].toUpperCase();
+            const tangoInput = document.getElementById(tangoElemId);
+            if (!tangoInput.value) { tangoInput.value = tangoCode; }
+            // Remueve el tango (y posibles corchetes/paréntesis que lo envuelvan) del título
+            inputElem.value = val.replace(new RegExp(`[\\[\\(]?${tangoCode}[\\]\\)]?`, 'i'), '').trim();
+        }
+    }
+
+    // 🛡️ LÓGICA DE AUTENTICACIÓN
     async function toggleMode() {
         const body = document.body; 
         const btnToggle = document.getElementById('btn-mode-toggle');
 
         if (isTeamLeader) {
-            // Apagar modo Leader (SOLO apaga la interfaz, NO cierra la sesión de Google)
             isTeamLeader = false;
             body.classList.remove('team-leader-mode'); 
             btnToggle.innerText = "MODO TÉCNICO"; 
             btnToggle.style.backgroundColor = "var(--accent)";
             render(); 
         } else {
-            // Encender modo Leader
             try {
-                // Abre el popup. Si el navegador ya recuerda la sesión, el popup se cierra casi al instante.
                 const result = await signInWithPopup(auth, provider);
                 const userEmail = result.user.email.toLowerCase();
 
@@ -553,14 +624,11 @@
                     btnToggle.style.backgroundColor = "var(--leader-color)";
                     render();
                 } else {
-                    // Expulsión de seguridad: cierra la sesión si el correo no está en la lista blanca
                     await signOut(auth); 
                     showConfirm(`ACCESO DENEGADO.\nEl correo ${userEmail} no tiene permisos.`, null);
                 }
             } catch (error) {
-                if (error.code !== 'auth/popup-closed-by-user') {
-                    console.error("Error táctico de autenticación:", error);
-                }
+                if (error.code !== 'auth/popup-closed-by-user') console.error("Error táctico de autenticación:", error);
             }
         }
     }
@@ -592,9 +660,114 @@
 
     function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
+    // Generador HTML para tareas reutilizable
+    function generateTaskHTML(avion, t, showPlaneReg = false) {
+        let cleanDesc = t.desc; let tangoDisplay = '';
+        if (t.tango) {
+            const regexClean = new RegExp(`\\[?${t.tango}\\]?`, 'gi');
+            cleanDesc = cleanDesc.replace(regexClean, '').trim().replace(/[- ]+$/, '').trim();
+            tangoDisplay = ` [<span class="tango-link" onclick="handleTangoClick('${t.tango}')">${t.tango}</span>]`;
+        }
+
+        const priorityLabel = t.priority ? '<span class="priority-badge">🔥 URGENTE</span>' : '';
+        const helpLabel = t.help ? '<span class="help-badge">🆘 APOYO</span>' : '';
+        const planePrefix = showPlaneReg ? `<strong style="color:var(--accent);">[${avion.reg}]</strong> ` : '';
+
+        return `
+            <div class="task-item ${t.done ? 'completed' : ''} ${t.priority ? 'priority' : ''} ${t.help ? 'help-needed' : ''}">
+                <div class="status-toggle no-print" onclick="toggleTask(${avion.id}, ${t.id})">✓</div>
+                <div class="task-main">
+                    <div class="task-info">
+                        <div class="task-desc">${planePrefix}- ${cleanDesc} ${tangoDisplay} ${priorityLabel} ${helpLabel}</div>
+                        ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
+                        ${t.comment ? `<div class="task-comment">↳ NOTA: ${t.comment}</div>` : ''}
+                    </div>
+                    <div class="action-bar no-print">
+                        <div class="leader-only leader-wrapper">
+                            <button class="action-btn ${t.priority ? 'active-danger' : ''}" onclick="togglePriority(${avion.id}, ${t.id})">🔥 URGENTE</button>
+                        </div>
+                        <button class="action-btn ${t.help ? 'active-help' : ''}" onclick="toggleHelp(${avion.id}, ${t.id})">🆘 APOYO</button>
+                        <button class="action-btn" onclick="editTaskComment(${avion.id}, ${t.id})">💬 NOTA</button>
+                        <div class="leader-only leader-wrapper">
+                            <button class="action-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderGroupedByTech(data, container) {
+        let grouped = {};
+        shiftTechs.forEach(tech => grouped[tech] = []);
+        grouped["SIN ASIGNAR"] = [];
+
+        data.forEach(avion => {
+            if (avion.tareas) {
+                avion.tareas.forEach(t => {
+                    let assigned = false;
+                    if (t.techs) {
+                        const assignedTechs = t.techs.split(' - ');
+                        assignedTechs.forEach(tech => {
+                            if (grouped[tech] !== undefined) {
+                                grouped[tech].push({avion, task: t});
+                                assigned = true;
+                            }
+                        });
+                    }
+                    if (!assigned) { grouped["SIN ASIGNAR"].push({avion, task: t}); }
+                });
+            }
+        });
+
+        for (const [tech, tasks] of Object.entries(grouped)) {
+            if (tasks.length === 0) continue; 
+            const div = document.createElement('div'); div.className = 'avion-section';
+            let html = `
+                <div class="avion-title" style="border-left-color: var(--leader-color);">
+                    <div class="avion-info-main">👨‍🔧 TÉCNICO: ${tech}</div>
+                </div>
+            `;
+            tasks.forEach(({avion, task}) => { html += generateTaskHTML(avion, task, true); });
+            div.innerHTML = html; container.appendChild(div);
+        }
+    }
+
     function render() {
         const container = document.getElementById('aviones-container'); container.innerHTML = '';
-        avionesData.forEach(avion => {
+        
+        // Copia profunda para manipular la vista sin afectar los datos en Firebase
+        let displayData = JSON.parse(JSON.stringify(avionesData));
+
+        // Aplicar Filtro Local
+        if (currentTechFilter) {
+            displayData.forEach(avion => {
+                if (avion.tareas) {
+                    avion.tareas = avion.tareas.filter(t => t.techs && t.techs.includes(currentTechFilter));
+                }
+            });
+            // Remover aviones que queden sin tareas (para limpiar la vista)
+            displayData = displayData.filter(avion => avion.tareas && avion.tareas.length > 0);
+        }
+
+        // Aplicar Ordenamiento por Tiempo
+        if (currentViewMode === 'time') {
+            displayData.sort((a, b) => {
+                if (!a.start && !b.start) return 0;
+                if (!a.start) return 1;
+                if (!b.start) return -1;
+                return a.start.localeCompare(b.start);
+            });
+        }
+
+        // Aplicar Vista por Técnicos
+        if (currentViewMode === 'tech') {
+            renderGroupedByTech(displayData, container);
+            return;
+        }
+
+        // Renderizado Default (Por Avión) o Por Tiempo
+        displayData.forEach(avion => {
             const div = document.createElement('div'); div.className = 'avion-section';
             const wpDisplay = avion.wp ? `<span class="tango-link" onclick="handleTangoClick('${avion.wp}')">(${avion.wp})</span>` : '';
             const posDisplay = avion.pos ? `<span class="avion-pos">POS: ${avion.pos}</span>` : '';
@@ -617,40 +790,7 @@
             `;
 
             if(avion.tareas) {
-                avion.tareas.forEach(t => {
-                    let cleanDesc = t.desc; let tangoDisplay = '';
-                    if (t.tango) {
-                        const regexClean = new RegExp(`\\[?${t.tango}\\]?`, 'gi');
-                        cleanDesc = cleanDesc.replace(regexClean, '').trim().replace(/[- ]+$/, '').trim();
-                        tangoDisplay = ` [<span class="tango-link" onclick="handleTangoClick('${t.tango}')">${t.tango}</span>]`;
-                    }
-
-                    const priorityLabel = t.priority ? '<span class="priority-badge">🔥 URGENTE</span>' : '';
-                    const helpLabel = t.help ? '<span class="help-badge">🆘 APOYO</span>' : '';
-
-                    html += `
-                        <div class="task-item ${t.done ? 'completed' : ''} ${t.priority ? 'priority' : ''} ${t.help ? 'help-needed' : ''}">
-                            <div class="status-toggle no-print" onclick="toggleTask(${avion.id}, ${t.id})">✓</div>
-                            <div class="task-main">
-                                <div class="task-info">
-                                    <div class="task-desc">- ${cleanDesc} ${tangoDisplay} ${priorityLabel} ${helpLabel}</div>
-                                    ${t.techs ? `<div class="task-techs">${t.techs}</div>` : ''}
-                                    ${t.comment ? `<div class="task-comment">↳ NOTA: ${t.comment}</div>` : ''}
-                                </div>
-                                <div class="action-bar no-print">
-                                    <div class="leader-only leader-wrapper">
-                                        <button class="action-btn ${t.priority ? 'active-danger' : ''}" onclick="togglePriority(${avion.id}, ${t.id})">🔥 URGENTE</button>
-                                    </div>
-                                    <button class="action-btn ${t.help ? 'active-help' : ''}" onclick="toggleHelp(${avion.id}, ${t.id})">🆘 APOYO</button>
-                                    <button class="action-btn" onclick="editTaskComment(${avion.id}, ${t.id})">💬 NOTA</button>
-                                    <div class="leader-only leader-wrapper">
-                                        <button class="action-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
+                avion.tareas.forEach(t => { html += generateTaskHTML(avion, t, false); });
             }
 
             div.innerHTML = html; container.appendChild(div);
@@ -827,7 +967,8 @@
         toggleTask, togglePriority, toggleHelp,
         openAddAvionModal, saveAddAvion, openEditAvionModal, saveEditAvion, confirmDeleteAvion,
         openAddTaskModal, saveAddTask, openEditTaskModal, saveEditTask, confirmDeleteTask,
-        editAvionComment, editTaskComment, closeConfirmModal, closePromptModal
+        editAvionComment, editTaskComment, closeConfirmModal, closePromptModal,
+        changeViewMode, applyLocalFilter, resetLocalFilter, handleTaskDescInput
     });
 
 </script>
