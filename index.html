@@ -306,8 +306,9 @@
     <div id="print-area">
         <div class="document-header" id="display-header">CARGANDO DATOS...</div>
         <div id="aviones-container"></div>
-        <div class="leader-only no-print" style="margin-top: 20px;">
-            <button class="btn-leader" onclick="openAddAvionModal()" style="width: 100%; padding: 12px; font-size: 12px;">+ AGREGAR AVIÓN</button>
+        <div class="leader-only no-print" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-leader" onclick="openAddAvionModal()" style="flex: 1; min-width: 200px; padding: 12px; font-size: 12px;">+ AGREGAR AVIÓN</button>
+            <button class="btn-leader" onclick="openAddActivityModal()" style="flex: 1; min-width: 200px; padding: 12px; font-size: 12px; background-color: var(--primary);">⭐ AGREGAR ACTIVIDAD EXTRA</button>
         </div>
     </div>
 </div>
@@ -355,9 +356,26 @@
     </div>
 </div>
 
+<div id="add-activity-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header" style="color: var(--leader-color);">⭐ AGREGAR ACTIVIDAD EXTRA</div>
+        <input type="text" id="add-act-title" placeholder="TÍTULO (EJ: REUNIÓN, CURSO, INVENTARIO)">
+        <div class="modal-row">
+            <input type="time" id="add-act-start" title="Inicio">
+            <input type="time" id="add-act-end" title="Término">
+        </div>
+        <div style="font-size: 10px; font-weight: bold; color: var(--comment); margin-bottom: 6px;">ASIGNAR TÉCNICOS:</div>
+        <div class="tech-grid" id="add-act-techs"></div>
+        <div class="modal-footer">
+            <button class="btn-outline btn-modal-action" onclick="closeModal('add-activity-modal')">CANCELAR</button>
+            <button class="btn-leader btn-modal-action" onclick="saveAddActivity()" style="background-color: var(--primary);">GUARDAR ACTIVIDAD</button>
+        </div>
+    </div>
+</div>
+
 <div id="edit-avion-modal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">✏️ EDITAR AVIÓN</div>
+        <div class="modal-header" id="edit-avion-header">✏️ EDITAR TIEMPOS</div>
         <input type="text" id="edit-ac-reg" placeholder="MATRÍCULA" maxlength="6" oninput="formatMatricula(this)">
         <div class="modal-row">
             <input type="text" id="edit-ac-wp" placeholder="WP (T00...)" maxlength="8">
@@ -367,10 +385,10 @@
             <input type="time" id="edit-ac-start" title="Inicio">
             <input type="time" id="edit-ac-end" title="Término">
         </div>
-        <input type="text" id="edit-ac-comment" placeholder="NOTA DEL AVIÓN (OPCIONAL)">
+        <input type="text" id="edit-ac-comment" placeholder="NOTA (OPCIONAL)">
         
         <div class="modal-footer">
-            <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteAvion()">ELIMINAR AVIÓN</button>
+            <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteAvion()">ELIMINAR</button>
             <button class="btn-outline btn-modal-action" onclick="closeModal('edit-avion-modal')">CANCELAR</button>
             <button class="btn-leader btn-modal-action" onclick="saveEditAvion()">GUARDAR</button>
         </div>
@@ -395,7 +413,7 @@
 
 <div id="edit-task-modal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">✏️ EDITAR TAREA</div>
+        <div class="modal-header">✏️ EDITAR TAREA / ACTIVIDAD</div>
         <input type="text" id="edit-task-desc" placeholder="TÍTULO DE LA TAREA" oninput="handleTaskDescInput(this, 'edit-task-tango')">
         <input type="text" id="edit-task-tango" placeholder="T00..." maxlength="8" oninput="autoFormatTango(this)">
         
@@ -403,7 +421,7 @@
         <div class="tech-grid" id="edit-task-techs"></div>
         
         <div class="modal-footer">
-            <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteTask()">ELIMINAR TAREA</button>
+            <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteTask()">ELIMINAR</button>
             <button class="btn-outline btn-modal-action" onclick="closeModal('edit-task-modal')">CANCELAR</button>
             <button class="btn-leader btn-modal-action" onclick="saveEditTask()">GUARDAR</button>
         </div>
@@ -466,33 +484,22 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             const userEmail = user.email.toLowerCase();
-            
             if (correosAutorizados.includes(userEmail)) {
                 let loginTime = localStorage.getItem('teamLeaderLoginTime');
-                
-                // Si el usuario acaba de iniciar sesión exitosamente y no hay marca de tiempo, la generamos ahora
                 if (!loginTime) {
                     loginTime = Date.now().toString();
                     localStorage.setItem('teamLeaderLoginTime', loginTime);
                 }
 
                 if ((Date.now() - parseInt(loginTime)) < SESSION_EXPIRATION_MS) {
-                    // Sesión válida y dentro del rango de 12 horas
-                    isTeamLeader = true;
-                    document.body.classList.add('team-leader-mode');
-                    const btnToggle = document.getElementById('btn-mode-toggle');
-                    btnToggle.innerText = "MODO TEAM LEADER";
-                    btnToggle.style.backgroundColor = "var(--leader-color)";
-                    render();
+                    activateLeaderUI();
                 } else {
-                    // Tiempo expirado
                     signOut(auth).then(() => {
                         localStorage.removeItem('teamLeaderLoginTime');
                         deactivateLeaderUI();
                     });
                 }
             } else {
-                // Usuario no autorizado en la lista de correos
                 signOut(auth).then(() => {
                     localStorage.removeItem('teamLeaderLoginTime');
                     deactivateLeaderUI();
@@ -503,6 +510,15 @@
             deactivateLeaderUI();
         }
     });
+
+    function activateLeaderUI() {
+        isTeamLeader = true;
+        document.body.classList.add('team-leader-mode');
+        const btnToggle = document.getElementById('btn-mode-toggle');
+        btnToggle.innerText = "MODO TEAM LEADER";
+        btnToggle.style.backgroundColor = "var(--leader-color)";
+        render();
+    }
 
     function deactivateLeaderUI() {
         isTeamLeader = false;
@@ -605,7 +621,6 @@
         });
     }
 
-    // --- CONTROLES DE VISTA Y FILTRO ---
     function updateTechFilterDropdown() {
         const select = document.getElementById('local-tech-filter');
         select.innerHTML = '<option value="">TODOS LOS TÉCNICOS</option>';
@@ -646,18 +661,22 @@
         }
     }
 
-    // 🛡️ LÓGICA DE AUTENTICACIÓN
+    // 🛡️ LÓGICA DE AUTENTICACIÓN MEJORADA
     async function toggleMode() {
         if (isTeamLeader) {
-            localStorage.removeItem('teamLeaderLoginTime');
-            await signOut(auth);
+            // Ya no cerramos sesión. Solo ocultamos la UI para operar rápido y sin latencia.
+            deactivateLeaderUI();
         } else {
-            try {
-                // Al iniciar sesión de forma exitosa, el observador onAuthStateChanged 
-                // se encargará de registrar el timestamp de forma inmediata y asíncrona.
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                if (error.code !== 'auth/popup-closed-by-user') console.error("Error táctico de autenticación:", error);
+            let loginTime = localStorage.getItem('teamLeaderLoginTime');
+            // Si la sesión existe en Firebase y no han pasado 12h, entramos directo
+            if (auth.currentUser && loginTime && (Date.now() - parseInt(loginTime)) < SESSION_EXPIRATION_MS) {
+                activateLeaderUI();
+            } else {
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (error) {
+                    if (error.code !== 'auth/popup-closed-by-user') console.error("Error táctico de autenticación:", error);
+                }
             }
         }
     }
@@ -794,18 +813,35 @@
             const posDisplay = avion.pos ? `<span class="avion-pos">POS: ${avion.pos}</span>` : '';
             const timesDisplay = (avion.start || avion.end) ? `<span class="avion-times">🕒 ${avion.start || '--:--'} - ${avion.end || '--:--'}</span>` : '';
             
+            // Variación visual táctica si es una Actividad
+            const headerStyle = avion.isActivity ? 'style="border-left-color: var(--primary); background-color: #f0fbfb;"' : '';
+            
+            let avionActionBtns = '';
+            if (avion.isActivity) {
+                avionActionBtns = `
+                    <button class="action-btn" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
+                    <div class="leader-only leader-wrapper">
+                        <button class="action-btn" onclick="openEditAvionModal(${avion.id})">🕒 EDITAR HORA</button>
+                    </div>
+                `;
+            } else {
+                avionActionBtns = `
+                    <button class="action-btn" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
+                    <div class="leader-only leader-wrapper">
+                        <button class="action-btn btn-highlight" onclick="openAddTaskModal(${avion.id})">➕ TAREA</button>
+                        <button class="action-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR</button>
+                    </div>
+                `;
+            }
+
             let html = `
-                <div class="avion-title">
+                <div class="avion-title" ${headerStyle}>
                     <div class="avion-info-main">
                         • ${avion.reg} ${wpDisplay} ${posDisplay} ${timesDisplay}
                         ${avion.comment ? `<div class="avion-comment">↳ NOTA: ${avion.comment}</div>` : ''}
                     </div>
                     <div class="action-bar avion-bar no-print">
-                        <button class="action-btn" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
-                        <div class="leader-only leader-wrapper">
-                            <button class="action-btn btn-highlight" onclick="openAddTaskModal(${avion.id})">➕ TAREA</button>
-                            <button class="action-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR</button>
-                        </div>
+                        ${avionActionBtns}
                     </div>
                 </div>
             `;
@@ -864,35 +900,84 @@
         if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
         if (wp && wp.length !== 8) return showConfirm("EL WP DEBE TENER 8 CARACTERES (EJ: T00RWT2F)", null);
 
-        avionesData.push({ id: Date.now(), reg, wp, pos, start, end, comment, tareas: [] });
+        avionesData.push({ id: Date.now(), reg, isActivity: false, wp, pos, start, end, comment, tareas: [] });
         saveData(); closeModal('add-avion-modal');
+    }
+
+    function openAddActivityModal() {
+        document.getElementById('add-act-title').value = ''; 
+        document.getElementById('add-act-start').value = '';
+        document.getElementById('add-act-end').value = '';
+        buildTechGrid('add-act-techs', ""); 
+        document.getElementById('add-activity-modal').style.display = 'block';
+    }
+
+    function saveAddActivity() {
+        const title = document.getElementById('add-act-title').value.trim().toUpperCase();
+        const start = document.getElementById('add-act-start').value;
+        const end = document.getElementById('add-act-end').value;
+        const checkboxes = document.querySelectorAll('.add-act-techs-cb:checked');
+        const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
+
+        if (!title) return showConfirm("INGRESE EL TÍTULO DE LA ACTIVIDAD.", null);
+
+        avionesData.push({ 
+            id: Date.now(), 
+            reg: "⭐ ACTIVIDAD EXTRA", // Se agrupa bajo este título visual
+            isActivity: true, 
+            wp: "", pos: "", start: start, end: end, comment: "", 
+            tareas: [{
+                id: Date.now() + 1,
+                desc: title,
+                tango: "",
+                techs: techs,
+                done: false, priority: false, help: false, comment: ""
+            }] 
+        });
+        saveData(); closeModal('add-activity-modal');
     }
 
     function openEditAvionModal(id) {
         const avion = avionesData.find(a => a.id == id); if (!avion) return; editCurrentAvionId = id;
-        document.getElementById('edit-ac-reg').value = avion.reg; document.getElementById('edit-ac-wp').value = avion.wp || '';
-        document.getElementById('edit-ac-pos').value = avion.pos || ''; document.getElementById('edit-ac-start').value = avion.start || '';
-        document.getElementById('edit-ac-end').value = avion.end || ''; document.getElementById('edit-ac-comment').value = avion.comment || '';
+        
+        document.getElementById('edit-ac-reg').value = avion.reg;
+        document.getElementById('edit-ac-reg').disabled = avion.isActivity;
+        
+        document.getElementById('edit-ac-wp').style.display = avion.isActivity ? 'none' : 'block';
+        document.getElementById('edit-ac-pos').style.display = avion.isActivity ? 'none' : 'block';
+        
+        document.getElementById('edit-ac-wp').value = avion.wp || '';
+        document.getElementById('edit-ac-pos').value = avion.pos || ''; 
+        document.getElementById('edit-ac-start').value = avion.start || '';
+        document.getElementById('edit-ac-end').value = avion.end || ''; 
+        document.getElementById('edit-ac-comment').value = avion.comment || '';
         document.getElementById('edit-avion-modal').style.display = 'block';
     }
 
     function saveEditAvion() {
         const avion = avionesData.find(a => a.id == editCurrentAvionId);
-        const reg = document.getElementById('edit-ac-reg').value.toUpperCase().trim();
-        let wp = document.getElementById('edit-ac-wp').value.toUpperCase().trim();
         
-        if (!reg || reg.length !== 6) return showConfirm("LA MATRÍCULA DEBE ESTAR COMPLETA", null);
-        if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
-        if (wp && wp.length !== 8) return showConfirm("EL WP DEBE TENER 8 CARACTERES", null);
+        if (!avion.isActivity) {
+            const reg = document.getElementById('edit-ac-reg').value.toUpperCase().trim();
+            let wp = document.getElementById('edit-ac-wp').value.toUpperCase().trim();
+            
+            if (!reg || reg.length !== 6) return showConfirm("LA MATRÍCULA DEBE ESTAR COMPLETA", null);
+            if (wp.length === 5 && !wp.startsWith('T00')) wp = 'T00' + wp;
+            if (wp && wp.length !== 8) return showConfirm("EL WP DEBE TENER 8 CARACTERES", null);
 
-        avion.reg = reg; avion.wp = wp; avion.pos = document.getElementById('edit-ac-pos').value.toUpperCase().trim();
-        avion.start = document.getElementById('edit-ac-start').value; avion.end = document.getElementById('edit-ac-end').value;
+            avion.reg = reg; 
+            avion.wp = wp; 
+            avion.pos = document.getElementById('edit-ac-pos').value.toUpperCase().trim();
+        }
+
+        avion.start = document.getElementById('edit-ac-start').value; 
+        avion.end = document.getElementById('edit-ac-end').value;
         avion.comment = document.getElementById('edit-ac-comment').value.toUpperCase().trim();
         saveData(); closeModal('edit-avion-modal');
     }
 
     function confirmDeleteAvion() {
-        showConfirm("¿CONFIRMAS BORRAR ESTE AVIÓN Y TODAS SUS TAREAS?", () => {
+        showConfirm("¿CONFIRMAS BORRAR ESTE BLOQUE Y TODAS SUS TAREAS?", () => {
             avionesData = avionesData.filter(a => a.id != editCurrentAvionId);
             saveData(); closeModal('edit-avion-modal');
         });
@@ -940,17 +1025,24 @@
     function openEditTaskModal(aId, tId) {
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         editCurrentAvionId = aId; editCurrentTaskId = tId;
-        document.getElementById('edit-task-desc').value = tarea.desc; document.getElementById('edit-task-tango').value = tarea.tango || "";
+        document.getElementById('edit-task-desc').value = tarea.desc; 
+        document.getElementById('edit-task-tango').value = tarea.tango || "";
+        document.getElementById('edit-task-tango').style.display = avion.isActivity ? 'none' : 'block';
+        
         buildTechGrid('edit-task-techs', tarea.techs || ""); document.getElementById('edit-task-modal').style.display = 'block';
     }
 
     function saveEditTask() {
         const avion = avionesData.find(a => a.id == editCurrentAvionId); const tarea = avion.tareas.find(t => t.id == editCurrentTaskId);
         const desc = document.getElementById('edit-task-desc').value.trim().toUpperCase();
-        let tango = document.getElementById('edit-task-tango').value.trim().toUpperCase();
+        
+        let tango = "";
+        if (!avion.isActivity) {
+            tango = document.getElementById('edit-task-tango').value.trim().toUpperCase();
+            if (tango && tango.length !== 8) return showConfirm("EL TANGO DEBE TENER 8 CARACTERES.", null);
+        }
         
         if (!desc) return showConfirm("LA DESCRIPCIÓN NO PUEDE ESTAR VACÍA.", null);
-        if (tango && tango.length !== 8) return showConfirm("EL TANGO DEBE TENER 8 CARACTERES.", null);
 
         const checkboxes = document.querySelectorAll('.edit-task-techs-cb:checked');
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
@@ -960,7 +1052,7 @@
     }
 
     function confirmDeleteTask() {
-        showConfirm("¿CONFIRMAS BORRAR ESTA TAREA?", () => {
+        showConfirm("¿CONFIRMAS BORRAR ESTA TAREA/ACTIVIDAD?", () => {
             const avion = avionesData.find(a => a.id == editCurrentAvionId);
             avion.tareas = avion.tareas.filter(t => t.id != editCurrentTaskId);
             saveData(); closeModal('edit-task-modal');
@@ -969,14 +1061,14 @@
 
     function editAvionComment(id) {
         const avion = avionesData.find(a => a.id == id);
-        showPromptModal("NOTA DEL AVIÓN", avion.comment, (val) => {
+        showPromptModal("NOTA", avion.comment, (val) => {
             avion.comment = val; saveData();
         });
     }
 
     function editTaskComment(aId, tId) {
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
-        showPromptModal("NOTA DE LA TAREA", tarea.comment, (val) => {
+        showPromptModal("NOTA DE TAREA/ACTIVIDAD", tarea.comment, (val) => {
             tarea.comment = val; saveData();
         });
     }
@@ -985,7 +1077,8 @@
         updateHeader, addTech, removeTech, toggleMode, clearAllData,
         formatMatricula, autoFormatTango, handleTangoClick, closeModal,
         toggleTask, togglePriority, toggleHelp,
-        openAddAvionModal, saveAddAvion, openEditAvionModal, saveEditAvion, confirmDeleteAvion,
+        openAddAvionModal, saveAddAvion, openAddActivityModal, saveAddActivity, 
+        openEditAvionModal, saveEditAvion, confirmDeleteAvion,
         openAddTaskModal, saveAddTask, openEditTaskModal, saveEditTask, confirmDeleteTask,
         editAvionComment, editTaskComment, closeConfirmModal, closePromptModal,
         changeViewMode, applyLocalFilter, resetLocalFilter, handleTaskDescInput
