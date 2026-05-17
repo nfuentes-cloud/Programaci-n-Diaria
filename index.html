@@ -49,45 +49,12 @@
         .leader-wrapper { display: contents; } 
         body:not(.team-leader-mode) .leader-only { display: none !important; }
 
-        /* Controles de vista y filtros locales - Escritorio */
-.view-controls {
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 15px; 
-    margin-bottom: 25px; 
-    background: #ffffff; 
-    padding: 15px; 
-    border-radius: 6px; 
-    border: 1px solid var(--border); 
-    align-items: center; 
-    justify-content: space-between;
-}
-
-/* DISEÑO EXCLUSIVO PARA CELULARES (Pantallas menores a 600px) */
-@media (max-width: 600px) {
-    .view-controls {
-        display: flex;
-        flex-direction: column;  /* Pone cada filtro en una fila propia hacia abajo */
-        align-items: stretch;    /* Estira los elementos al ancho total de la caja */
-        gap: 12px;               /* Separación limpia entre filas */
-        padding: 15px;
-    }
-
-    /* Forzamos a que los selectores ocupen el espacio disponible sin salirse */
-    .view-controls select {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box;
-        margin-top: 4px;         /* Espacio entre el texto del título y su cajita */
-    }
-
-    /* El botón restablecer se adaptará al ancho para que nunca rompa el contenedor */
-    .view-controls button {
-        width: 100% !important;
-        box-sizing: border-box;
-        margin-top: 8px;         /* Lo separa del selector de técnicos */
-    }
-}
+        /* Controles de vista y filtros locales */
+        .view-controls {
+            display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; 
+            background: #ffffff; padding: 12px 15px; border-radius: 6px; 
+            border: 1px solid var(--border); align-items: center; justify-content: space-between;
+        }
 
         /* PANEL DE CONTROL TEAM LEADER */
         .header-controls {
@@ -127,7 +94,7 @@
 
         /* Etiquetas de técnicos */
         #tech-pills-container {
-            display: flex; flex-wrap: wrap; gap: 8px; width: auto;
+            display: flex; flex-wrap: wrap; gap: 8px; width: 100%;
             padding: 12px; background: white; border-radius: 6px; border: 1px dashed var(--border);
         }
 
@@ -325,7 +292,7 @@
         <!-- SELECTOR DE TURNO GLOBAL CON MEMORIA -->
         <div style="display: flex; gap: 8px; align-items: center;">
             <span style="font-size: 11px; font-weight: bold; color: var(--accent);">TURNO:</span>
-            <select id="global-turno-select" onchange="changeTurno()" style="min-width: 100px; font-weight: bold; border: 2px solid var(--accent); color: var(--accent);">
+            <select id="global-turno-select" onchange="changeTurno()" style="min-width: 120px; font-weight: bold; border: 2px solid var(--accent); color: var(--accent);">
                 <option value="Turno Día">DÍA</option>
                 <option value="Turno Tarde">TARDE</option>
                 <option value="Turno Noche">NOCHE</option>
@@ -334,11 +301,11 @@
         
         <div style="display: flex; gap: 8px; align-items: center;">
             <span style="font-size: 11px; font-weight: bold; color: var(--comment);">MODO DE VISTA:</span>
-            <select id="view-mode-select" onchange="changeViewMode()" style="min-width: 170px;">
-                <option value="default">✈️ POR AVIÓN</option>
+            <select id="view-mode-select" onchange="changeViewMode()" style="min-width: 180px; font-weight: bold;">
+                <option value="default">✈️ POR AVIÓN (DEFAULT)</option>
                 <option value="time">🕒 POR HORA DE INICIO</option>
-                <option value="tech">👨‍🔧 AGRUPAR POR TÉCNICO</option>
-                <option value="tech-group">👥 AGRUPAR POR GRUPO</option>
+                <option value="tech">👨‍🔧 AGRUPAR POR TÉCNICO (INDIVIDUAL)</option>
+                <option value="tech-group">👥 AGRUPAR POR GRUPO EXACTO</option>
             </select>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
@@ -353,7 +320,7 @@
     <div class="header-controls leader-only no-print">
         <div class="leader-panel-header">
             <div class="leader-title">⚙️ PANEL DE CONTROL TEAM LEADER</div>
-            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 8px 12px; font-size: 10px;">⚠️ BORRAR PROGRAMACIÓN</button>
+            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 8px 12px; font-size: 10px;">⚠️ BORRAR TODO EL TURNO</button>
         </div>
 
         <div class="leader-grid">
@@ -367,7 +334,7 @@
                 <span style="font-size: 11px; font-weight: bold; color: var(--primary); width: 65px;">TÉCNICOS:</span>
                 <input type="text" id="in-new-tech" placeholder="NOMBRE DEL TÉCNICO" onkeypress="if(event.key === 'Enter') addTech()" style="max-width: 270px;">
                 <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
-                <button class="btn-danger-outline" onclick="removeAllTechs()" style="padding: 8px 12px; font-size: 10px; margin-left: auto;">🗑️ BORRAR TÉCNICOS</button>
+                <button class="btn-danger-outline" onclick="removeAllTechs()" style="padding: 8px 12px; font-size: 10px; margin-left: auto;">🗑️ BORRAR TODOS</button>
             </div>
 
             <div id="tech-pills-container"></div>
@@ -951,7 +918,7 @@
             
             let html = `
                 <div class="avion-title" style="background: var(--leader-color);">
-                    <div class="avion-info-main">👥 ${group}</div>
+                    <div class="avion-info-main">👥 GRUPO ASIGNADO: ${group}</div>
                 </div>
                 <div class="task-container">
             `;
