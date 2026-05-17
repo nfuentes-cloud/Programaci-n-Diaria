@@ -289,7 +289,8 @@
             <select id="view-mode-select" onchange="changeViewMode()" style="min-width: 180px; font-weight: bold;">
                 <option value="default">✈️ POR AVIÓN (DEFAULT)</option>
                 <option value="time">🕒 POR HORA DE INICIO</option>
-                <option value="tech">👨‍🔧 AGRUPAR POR TÉCNICO</option>
+                <option value="tech">👨‍🔧 AGRUPAR POR TÉCNICO (INDIVIDUAL)</option>
+                <option value="tech-group">👥 AGRUPAR POR GRUPO EXACTO</option>
             </select>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
@@ -323,6 +324,7 @@
                 <span style="font-size: 11px; font-weight: bold; color: var(--primary); width: 65px;">TÉCNICOS:</span>
                 <input type="text" id="in-new-tech" placeholder="NOMBRE DEL TÉCNICO" onkeypress="if(event.key === 'Enter') addTech()" style="max-width: 270px;">
                 <button class="btn-leader" onclick="addTech()">+ AGREGAR A LA LISTA</button>
+                <button class="btn-danger-outline" onclick="removeAllTechs()" style="padding: 8px 12px; font-size: 10px; margin-left: auto;">🗑️ BORRAR TODOS</button>
             </div>
 
             <div id="tech-pills-container"></div>
@@ -514,7 +516,8 @@
     const SESSION_EXPIRATION_MS = 12 * 60 * 60 * 1000;
 
     let currentViewMode = localStorage.getItem('viewMode') || 'default';
-    let currentTechFilter = localStorage.getItem('techFilter') || '';
+    let currentTechFilter = ''; // Se inicializa vacío siempre (filtro local temporal)
+    
     document.getElementById('view-mode-select').value = currentViewMode;
 
     onAuthStateChanged(auth, (user) => {
@@ -642,6 +645,14 @@
         });
     }
 
+    function removeAllTechs() {
+        if (shiftTechs.length === 0) return showConfirm("NO HAY TÉCNICOS PARA BORRAR.", null);
+        showConfirm("⚠️ ¿ESTÁS SEGURO DE BORRAR TODOS LOS TÉCNICOS DE LA LISTA?", () => {
+            shiftTechs = [];
+            saveTechs();
+        });
+    }
+
     function renderTechPills() {
         const container = document.getElementById('tech-pills-container'); container.innerHTML = '';
         if(shiftTechs.length === 0) {
@@ -672,14 +683,14 @@
 
     function applyLocalFilter() {
         currentTechFilter = document.getElementById('local-tech-filter').value;
-        localStorage.setItem('techFilter', currentTechFilter);
+        // Se remueve la línea que guardaba en localStorage
         render();
     }
 
     function resetLocalFilter() {
         currentTechFilter = '';
         document.getElementById('local-tech-filter').value = '';
-        localStorage.setItem('techFilter', '');
+        // Se remueve la línea que borraba de localStorage
         render();
     }
 
@@ -775,6 +786,7 @@
         `;
     }
 
+    // Vista: Agrupar separando a cada técnico de manera individual (como lo tenías)
     function renderGroupedByTech(data, container) {
         let grouped = {};
         shiftTechs.forEach(tech => grouped[tech] = []);
@@ -815,6 +827,47 @@
         }
     }
 
+    // NUEVA VISTA: Agrupar por el grupo exacto de técnicos asignados
+    function renderGroupedByExactTechs(data, container) {
+        let grouped = {};
+
+        data.forEach(avion => {
+            if (avion.tareas) {
+                avion.tareas.forEach(t => {
+                    let groupName = (t.techs && t.techs.trim() !== '') ? t.techs.trim() : "SIN ASIGNAR";
+                    if (!grouped[groupName]) {
+                        grouped[groupName] = [];
+                    }
+                    grouped[groupName].push({avion, task: t});
+                });
+            }
+        });
+
+        // Ordenamos alfabéticamente dejando "SIN ASIGNAR" al final
+        let keys = Object.keys(grouped).sort((a, b) => {
+            if (a === "SIN ASIGNAR") return 1;
+            if (b === "SIN ASIGNAR") return -1;
+            return a.localeCompare(b);
+        });
+
+        keys.forEach(group => {
+            const tasks = grouped[group];
+            if (tasks.length === 0) return;
+            const div = document.createElement('div'); div.className = 'avion-section';
+            
+            let html = `
+                <div class="avion-title" style="background: var(--leader-color);">
+                    <div class="avion-info-main">👥 GRUPO ASIGNADO: ${group}</div>
+                </div>
+                <div class="task-container">
+            `;
+            tasks.forEach(({avion, task}) => { html += generateTaskHTML(avion, task, true); });
+            html += `</div>`;
+            
+            div.innerHTML = html; container.appendChild(div);
+        });
+    }
+
     function render() {
         const container = document.getElementById('aviones-container'); container.innerHTML = '';
         let displayData = JSON.parse(JSON.stringify(avionesData));
@@ -839,6 +892,11 @@
 
         if (currentViewMode === 'tech') {
             renderGroupedByTech(displayData, container);
+            return;
+        }
+
+        if (currentViewMode === 'tech-group') {
+            renderGroupedByExactTechs(displayData, container);
             return;
         }
 
@@ -1110,7 +1168,7 @@
     }
 
     Object.assign(window, {
-        updateHeader, addTech, removeTech, toggleMode, clearAllData,
+        updateHeader, addTech, removeTech, removeAllTechs, toggleMode, clearAllData,
         formatMatricula, autoFormatTango, handleTangoClick, closeModal,
         toggleTask, togglePriority, toggleHelp,
         openAddAvionModal, saveAddAvion, openAddActivityModal, saveAddActivity, 
