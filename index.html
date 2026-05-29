@@ -636,7 +636,7 @@
         
         const clockEl = document.getElementById('live-clock');
         if (clockEl) {
-            clockEl.innerHTML = `<span style="color:var(--accent)">🌍 LOCAL: ${local}</span> <span style="color:var(--comment)">✈️ UTC: ${utc}Z</span>`;
+            clockEl.innerHTML = `<span style="color:var(--accent)">🌍 LOCAL: ${local}</span> <span style="color:var(--comment)">✈️ UTC: ${utc}</span>`;
         }
     }
     setInterval(updateClock, 1000);
