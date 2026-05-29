@@ -39,9 +39,17 @@
             border-radius: 6px; align-items: center;
         }
 
+        .top-bar-left { display: flex; gap: 10px; }
+
+        /* Reloj Inteligente */
+        .live-clock {
+            display: flex; gap: 12px; font-size: 11px; font-weight: bold;
+            background: white; padding: 0 15px; border-radius: 4px; border: 1px solid var(--border);
+            align-items: center; justify-content: center; height: 34px; box-sizing: border-box;
+        }
+
         .btn-top {
             width: 160px; height: 34px; font-size: 11px; padding: 0; font-weight: bold;
-            display: flex; align-items: center; justify-content: center; box-sizing: border-box;
             border-radius: 4px; border: none; cursor: pointer; transition: opacity 0.2s;
         }
         .btn-top:hover { opacity: 0.9; }
@@ -93,7 +101,13 @@
         input[type="text"], input[type="date"] { flex: 1; min-width: 130px; }
         input.time-input { min-width: auto; width: 75px; text-align: center; font-weight: bold; flex: none; }
         
-        button { background-color: var(--primary); color: white; border: none; cursor: pointer; font-weight: 700; transition: all 0.2s; }
+        /* CORRECCIÓN GLOBAL DE BOTONES PARA CENTRADO VERTICAL PERFECTO */
+        button { 
+            background-color: var(--primary); color: white; border: none; cursor: pointer; 
+            font-weight: 700; transition: all 0.2s; 
+            display: inline-flex; align-items: center; justify-content: center; 
+            text-align: center; line-height: 1; margin: 0; box-sizing: border-box;
+        }
         button:hover { opacity: 0.9; }
         
         .btn-accent { background-color: var(--accent); }
@@ -214,11 +228,9 @@
         .action-bar.avion-bar .btn-highlight:hover { background: var(--light-gray); }
 
         .action-btn {
-            padding: 6px 10px; font-size: 10px; font-weight: 700; height: 30px; /* Tamaño específico para action buttons */
+            padding: 0 10px; font-size: 10px; font-weight: 700; height: 30px; 
             border-radius: 4px; border: 1px solid var(--border);
-            background: #ffffff; color: var(--primary);
-            cursor: pointer; transition: all 0.2s; 
-            display: flex; align-items: center; justify-content: center; gap: 4px;
+            background: #ffffff; color: var(--primary); gap: 4px;
         }
 
         .action-btn:hover { background: var(--light-gray); border-color: #a0aec0; }
@@ -262,7 +274,7 @@
         .tech-checkbox-label span { word-wrap: break-word; white-space: normal; line-height: 1.2; }
 
         .modal-footer { display: flex; gap: 10px; margin-top: 10px; padding-top: 20px; border-top: 1px solid var(--border); }
-        .btn-modal-action { flex: 1; padding: 12px 0; height: auto; font-size: 11px; text-align: center; display: flex; justify-content: center; align-items: center; border-radius: 4px;}
+        .btn-modal-action { flex: 1; padding: 0; height: 34px; font-size: 11px; border-radius: 4px;}
 
         @media print {
             @page { size: letter; margin: 1cm; } .no-print { display: none !important; }
@@ -298,7 +310,9 @@
             
             /* Top Bar */
             .top-bar { flex-direction: column; gap: 8px; }
+            .top-bar-left { width: 100%; flex-direction: column; }
             .btn-top { width: 100%; }
+            .live-clock { width: 100%; justify-content: space-between; }
             
             /* Controles de Vista */
             .view-controls { flex-direction: column; align-items: stretch; gap: 12px; }
@@ -307,7 +321,7 @@
             .view-controls select { width: 100%; min-width: 0; }
             .view-controls button.btn-outline { width: 100%; order: 99; margin-top: 4px; }
             
-            /* Panel Team Leader - CORREGIDO PARA FECHA/INPUTS PROPORCIONALES */
+            /* Panel Team Leader */
             .header-controls { padding: 15px 12px; }
             .leader-panel-header { flex-direction: column; gap: 12px; text-align: center; }
             .leader-panel-header button { width: 100%; }
@@ -327,19 +341,19 @@
             .avion-info-main { flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
             .action-bar.avion-bar { justify-content: center; width: 100%; margin-top: 4px; }
             
-            /* Tareas - Layout Absoluto para optimizar espacio lateral */
+            /* Tareas */
             .task-item { position: relative; padding: 12px 12px 12px 45px; }
             .status-toggle { position: absolute; left: 12px; top: 12px; margin: 0; }
             .task-main { flex-direction: column; align-items: stretch; gap: 12px; }
             
-            /* Botoneras Tácticas - Grid perfecto de 2 columnas */
+            /* Botoneras Tácticas */
             .action-bar { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 6px; }
             .action-bar .action-btn { width: 100%; box-sizing: border-box; }
             .leader-wrapper { display: contents; } 
             
             /* Modals adaptados */
             .modal-content { width: 92%; padding: 16px; margin: 10% auto; }
-            .modal-row { flex-direction: row; gap: 10px; } /* Mantenemos row en móvil para aprovechar espacio horizontal (WP/POS y Horas) */
+            .modal-row { flex-direction: row; gap: 10px; } 
         }
     </style>
 </head>
@@ -349,8 +363,11 @@
 
 <div class="container">
     <div class="top-bar no-print">
-        <button type="button" id="btn-mode-toggle" class="btn-accent btn-top" onclick="toggleMode()">MODO TÉCNICO</button>
-        <button type="button" id="btn-logout" class="btn-top btn-danger-outline" onclick="logoutLeader()" style="display:none; background-color: var(--danger); color:white; border:none;">CERRAR SESIÓN</button>
+        <div class="top-bar-left">
+            <button type="button" id="btn-mode-toggle" class="btn-accent btn-top" onclick="toggleMode()">MODO TÉCNICO</button>
+            <button type="button" id="btn-logout" class="btn-top btn-danger-outline" onclick="logoutLeader()" style="display:none; background-color: var(--danger); color:white; border:none;">CERRAR SESIÓN</button>
+        </div>
+        <div id="live-clock" class="live-clock"></div>
         <button class="btn-top" onclick="window.print()" style="background-color: #64748b; color:white;">🖨️ IMPRIMIR HOJA</button>
     </div>
 
@@ -378,14 +395,14 @@
             <select id="local-tech-filter" onchange="applyLocalFilter()" style="min-width: 170px;">
                 <option value="">TODOS LOS TÉCNICOS</option>
             </select>
-            <button class="btn-outline" onclick="resetLocalFilter()" style="padding: 8px 12px; font-size: 10px;">RESTABLECER</button>
+            <button class="btn-outline" onclick="resetLocalFilter()" style="padding: 0 12px; font-size: 10px;">RESTABLECER</button>
         </div>
     </div>
 
     <div class="header-controls leader-only no-print">
         <div class="leader-panel-header">
             <div class="leader-title">⚙️ PANEL DE CONTROL TEAM LEADER</div>
-            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 8px 12px; font-size: 10px;">⚠️ BORRAR PROGRAMACIÓN</button>
+            <button class="btn-danger-outline" onclick="clearAllData()" style="padding: 0 12px; font-size: 10px;">⚠️ BORRAR PROGRAMACIÓN</button>
         </div>
 
         <div class="leader-grid">
@@ -398,9 +415,9 @@
             <div class="control-group" style="margin-bottom: 5px;">
                 <span style="font-size: 11px; font-weight: bold; color: var(--primary); width: 65px;">TÉCNICOS:</span>
                 <input type="text" id="in-new-tech" placeholder="ESCRIBE PARA BUSCAR..." list="global-techs-list" onkeypress="if(event.key === 'Enter') addTech()">
-                <button class="btn-leader" onclick="addTech()">+ AGREGAR AL TURNO</button>
-                <button class="btn-outline" onclick="openManageTechsModal()" style="padding: 8px 12px; font-size: 10px;" title="Editar Base Global de Técnicos">👥 BASE GLOBAL</button>
-                <button class="btn-danger-outline" onclick="removeAllTechs()" style="padding: 8px 12px; font-size: 10px; margin-left: auto;">🗑️ BORRAR TÉCNICOS</button>
+                <button class="btn-leader" onclick="addTech()" style="padding: 0 12px;">+ AGREGAR AL TURNO</button>
+                <button class="btn-outline" onclick="openManageTechsModal()" style="padding: 0 12px; font-size: 10px;" title="Editar Base Global de Técnicos">👥 BASE GLOBAL</button>
+                <button class="btn-danger-outline" onclick="removeAllTechs()" style="padding: 0 12px; font-size: 10px; margin-left: auto;">🗑️ BORRAR TÉCNICOS</button>
             </div>
 
             <div id="tech-pills-container"></div>
@@ -425,8 +442,8 @@
         <div id="aviones-container"></div>
         
         <div class="leader-only no-print" style="margin-top: 30px; display: flex; gap: 15px; flex-wrap: wrap;">
-            <button class="btn-leader" onclick="openAddAvionModal()" style="flex: 1; min-width: 200px; padding: 14px; font-size: 12px; border-radius: 6px;">+ AGREGAR AVIÓN</button>
-            <button class="btn-accent" onclick="openAddActivityModal()" style="flex: 1; min-width: 200px; padding: 14px; font-size: 12px; border-radius: 6px;">⭐ AGREGAR ACTIVIDAD EXTRA</button>
+            <button class="btn-leader" onclick="openAddAvionModal()" style="flex: 1; min-width: 200px; padding: 14px; font-size: 12px; border-radius: 6px; height: auto;">+ AGREGAR AVIÓN</button>
+            <button class="btn-accent" onclick="openAddActivityModal()" style="flex: 1; min-width: 200px; padding: 14px; font-size: 12px; border-radius: 6px; height: auto;">⭐ AGREGAR ACTIVIDAD EXTRA</button>
         </div>
     </div>
 </div>
@@ -597,12 +614,12 @@
 
     let avionesData = [];
     let shiftTechs = []; 
-    let globalTechs = []; // Nueva base de datos global
+    let globalTechs = [];
     let isTeamLeader = false;
     let editCurrentAvionId = null;
     let editCurrentTaskId = null;
     const MAINTENIX_URL = "https://maintenix.lan.com/maintenix/common/ToDoList.jsp";
-    const SESSION_EXPIRATION_MS = 12 * 60 * 60 * 1000; // 12 horas
+    const SESSION_EXPIRATION_MS = 12 * 60 * 60 * 1000;
 
     let currentViewMode = 'default';
     let currentTechFilter = ''; 
@@ -611,14 +628,26 @@
     document.getElementById('global-turno-select').value = activeTurno;
     document.getElementById('view-mode-select').value = currentViewMode;
 
-    // Conexión a la base de datos Global de Técnicos
+    // Reloj Dinámico
+    function updateClock() {
+        const now = new Date();
+        const local = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const utc = now.toLocaleTimeString('es-ES', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        
+        const clockEl = document.getElementById('live-clock');
+        if (clockEl) {
+            clockEl.innerHTML = `<span style="color:var(--accent)">🌍 LOCAL: ${local}</span> <span style="color:var(--comment)">✈️ UTC: ${utc}Z</span>`;
+        }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
     const globalTechsRef = ref(db, 'mantenimiento/global_techs');
     onValue(globalTechsRef, (snapshot) => {
         globalTechs = snapshot.val() || [];
         updateGlobalTechsUI();
     });
 
-    // Validación de sesión local al iniciar la página
     checkSession();
 
     function checkSession() {
@@ -666,10 +695,8 @@
 
     function toggleMode() {
         if (isTeamLeader) {
-            // Regresa a modo técnico, pero conserva el token de sesión en localStorage
             deactivateLeaderUI();
         } else {
-            // Revisa si existe sesión válida y recupera acceso inmediatamente
             const savedEmail = localStorage.getItem('tl_email');
             const loginTime = localStorage.getItem('tl_login_time');
 
@@ -792,7 +819,6 @@
         closePromptModal();
     };
 
-    // FUNCIONES GLOBALES DE TÉCNICOS
     function updateGlobalTechsUI() {
         const datalist = document.getElementById('global-techs-list');
         datalist.innerHTML = '';
@@ -1376,7 +1402,6 @@
         });
     }
 
-    // Exponer funciones necesarias al entorno global (window)
     Object.assign(window, {
         updateHeader, addTech, removeTech, removeAllTechs, toggleMode, clearAllData, logoutLeader,
         formatMatricula, autoFormatTango, handleTangoClick, closeModal,
@@ -1387,7 +1412,7 @@
         editAvionComment, editTaskComment, closeConfirmModal, closePromptModal,
         changeViewMode, applyLocalFilter, resetLocalFilter, handleTaskDescInput,
         formatTime, changeTurno,
-        openManageTechsModal, addGlobalTech, removeGlobalTech // Nuevas funciones expuestas
+        openManageTechsModal, addGlobalTech, removeGlobalTech
     });
 
 </script>
