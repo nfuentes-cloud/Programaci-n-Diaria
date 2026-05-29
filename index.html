@@ -211,6 +211,9 @@
             font-weight: bold; color: transparent; font-size: 14px; transition: all 0.2s; user-select: none; border-radius: 50%;
         }
 
+        /* Ocultar barra de acciones en tareas completadas */
+        .task-item.completed .action-bar { display: none !important; }
+
         .task-item.completed .status-toggle { background-color: #10b981; border-color: #10b981; color: white; }
         .task-item.completed { border-left: none; background-color: #f8fafc !important; opacity: 0.45; filter: grayscale(100%); transition: all 0.3s ease; }
         
@@ -542,6 +545,8 @@
         <div style="font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 8px;">ASIGNAR TÉCNICOS:</div>
         <div class="tech-grid" id="add-task-techs"></div>
         
+        <input type="text" id="add-task-comment" placeholder="NOTA DE LA TAREA (OPCIONAL)">
+        
         <div class="modal-footer">
             <button class="btn-outline btn-modal-action" onclick="closeModal('add-task-modal')">CANCELAR</button>
             <button class="btn-leader btn-modal-action" onclick="saveAddTask()">GUARDAR TAREA</button>
@@ -577,6 +582,8 @@
         
         <div style="font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 8px;">TÉCNICOS ASIGNADOS:</div>
         <div class="tech-grid" id="edit-task-techs"></div>
+        
+        <input type="text" id="edit-task-comment" placeholder="NOTA DE LA TAREA (OPCIONAL)">
         
         <div class="modal-footer">
             <button class="btn-danger-outline btn-modal-action" onclick="confirmDeleteTask()">ELIMINAR</button>
@@ -1374,6 +1381,7 @@
     function openAddTaskModal(avionId) {
         editCurrentAvionId = avionId;
         document.getElementById('add-task-desc').value = ''; document.getElementById('add-task-tango').value = '';
+        document.getElementById('add-task-comment').value = '';
         buildTechGrid('add-task-techs', ""); document.getElementById('add-task-modal').style.display = 'block';
     }
 
@@ -1382,6 +1390,7 @@
         if(!avion.tareas) avion.tareas = [];
         const desc = document.getElementById('add-task-desc').value.trim().toUpperCase();
         let tango = document.getElementById('add-task-tango').value.trim().toUpperCase();
+        const comment = document.getElementById('add-task-comment').value.trim().toUpperCase();
         
         if (!desc) return showConfirm("INGRESE EL TÍTULO DE LA TAREA.", null);
         if (tango && tango.length !== 8) return showConfirm("EL TANGO DEBE TENER 8 CARACTERES.", null);
@@ -1389,7 +1398,7 @@
         const checkboxes = document.querySelectorAll('.add-task-techs-cb:checked');
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
 
-        avion.tareas.push({ id: Date.now(), desc, tango, techs, done: false, priority: false, help: false, comment: "" });
+        avion.tareas.push({ id: Date.now(), desc, tango, techs, done: false, priority: false, help: false, comment: comment });
         saveData(); closeModal('add-task-modal');
     }
 
@@ -1475,12 +1484,17 @@
         document.getElementById('edit-task-tango').value = tarea.tango || "";
         document.getElementById('edit-task-tango').style.display = avion.isActivity ? 'none' : 'block';
         
-        buildTechGrid('edit-task-techs', tarea.techs || ""); document.getElementById('edit-task-modal').style.display = 'block';
+        buildTechGrid('edit-task-techs', tarea.techs || ""); 
+        
+        document.getElementById('edit-task-comment').value = tarea.comment || "";
+        
+        document.getElementById('edit-task-modal').style.display = 'block';
     }
 
     function saveEditTask() {
         const avion = avionesData.find(a => a.id == editCurrentAvionId); const tarea = avion.tareas.find(t => t.id == editCurrentTaskId);
         const desc = document.getElementById('edit-task-desc').value.trim().toUpperCase();
+        const comment = document.getElementById('edit-task-comment').value.trim().toUpperCase();
         
         let tango = "";
         if (!avion.isActivity) {
@@ -1493,7 +1507,7 @@
         const checkboxes = document.querySelectorAll('.edit-task-techs-cb:checked');
         const techs = Array.from(checkboxes).map(cb => cb.value).join(' - ');
 
-        tarea.desc = desc; tarea.tango = tango; tarea.techs = techs;
+        tarea.desc = desc; tarea.tango = tango; tarea.techs = techs; tarea.comment = comment;
         saveData(); closeModal('edit-task-modal');
     }
 
