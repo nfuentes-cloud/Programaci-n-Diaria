@@ -546,6 +546,26 @@
     </div>
 </div>
 
+<div id="predef-task-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">📑 TAREAS PREDEFINIDAS / PREVENTIVOS</div>
+        
+        <div style="font-size: 11px; font-weight: bold; color: var(--primary); margin-bottom: 8px;">CREAR NUEVA TAREA:</div>
+        <div class="modal-row" style="margin-bottom: 5px;">
+            <input type="text" id="new-predef-desc" placeholder="DESCRIPCIÓN DE LA TAREA..." onkeypress="if(event.key === 'Enter') createAndAddPredef()">
+            <button class="btn-leader" onclick="createAndAddPredef()" style="width:140px; font-size: 10px;">CREAR Y AÑADIR</button>
+        </div>
+        
+        <div style="font-size: 11px; font-weight: bold; color: var(--primary); margin: 20px 0 8px;">SELECCIONAR EXISTENTE (CLIC PARA AÑADIR):</div>
+        <div id="predef-tasks-container" class="tech-grid" style="border: 1px dashed var(--border); padding: 10px; border-radius: 6px; background: var(--bg); max-height: 250px; overflow-y: auto;">
+            </div>
+        
+        <div class="modal-footer">
+            <button class="btn-outline btn-modal-action" onclick="closeModal('predef-task-modal')">CERRAR VENTANA</button>
+        </div>
+    </div>
+</div>
+
 <div id="edit-task-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ EDITAR TAREA / ACTIVIDAD</div>
@@ -615,6 +635,8 @@
     let avionesData = [];
     let shiftTechs = []; 
     let globalTechs = [];
+    let predefTasks = []; // Nuevo arreglo para Tareas Predefinidas
+    
     let isTeamLeader = false;
     let editCurrentAvionId = null;
     let editCurrentTaskId = null;
@@ -646,6 +668,13 @@
     onValue(globalTechsRef, (snapshot) => {
         globalTechs = snapshot.val() || [];
         updateGlobalTechsUI();
+    });
+    
+    // Escuchar Base de Tareas Predefinidas
+    const predefTasksRef = ref(db, 'mantenimiento/predefined_tasks');
+    onValue(predefTasksRef, (snapshot) => {
+        predefTasks = snapshot.val() || [];
+        updatePredefTasksUI();
     });
 
     checkSession();
@@ -1156,6 +1185,7 @@
                     <button class="action-btn" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
                     <div class="leader-only leader-wrapper">
                         <button class="action-btn btn-highlight" onclick="openAddTaskModal(${avion.id})">➕ TAREA</button>
+                        <button class="action-btn btn-highlight" onclick="openPredefModal(${avion.id})" style="background-color: #e2e8f0; border-color: #cbd5e0;" title="Agregar Tareas Predefinidas / Preventivas">📑 PREDEF.</button>
                         <button class="action-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR</button>
                     </div>
                 `;
@@ -1351,6 +1381,81 @@
         saveData(); closeModal('add-task-modal');
     }
 
+    /* ---------------------------------------------------------
+       FUNCIONES DE TAREAS PREDEFINIDAS
+    ---------------------------------------------------------- */
+    function openPredefModal(avionId) {
+        editCurrentAvionId = avionId;
+        document.getElementById('new-predef-desc').value = '';
+        updatePredefTasksUI();
+        document.getElementById('predef-task-modal').style.display = 'block';
+    }
+
+    function updatePredefTasksUI() {
+        const container = document.getElementById('predef-tasks-container');
+        if (!container) return;
+        container.innerHTML = '';
+        if (predefTasks.length === 0) {
+            container.innerHTML = '<span style="font-size:11px; color:var(--comment); font-style:italic;">No hay tareas predefinidas. Crea una nueva arriba.</span>';
+            return;
+        }
+        predefTasks.forEach((desc, index) => {
+            container.innerHTML += `
+                <div class="tech-pill" style="justify-content: space-between; display: flex; width: 100%; box-sizing: border-box; background: white;">
+                    <span class="tech-name" onclick="addExistingPredef(${index})" style="flex:1; padding: 6px; cursor: pointer;" title="Haz clic para añadir esta tarea al avión">➕ ${desc}</span>
+                    <span class="tech-remove" onclick="removePredefTask(${index})" style="padding: 6px;" title="Eliminar definitivamente de la Base Global">✖</span>
+                </div>
+            `;
+        });
+    }
+
+    function createAndAddPredef() {
+        const input = document.getElementById('new-predef-desc');
+        const desc = input.value.trim().toUpperCase();
+        if (!desc) return showConfirm("INGRESE UNA DESCRIPCIÓN PARA LA TAREA.", null);
+        
+        // Agregar a la base global de predefinidas si no existe
+        if (!predefTasks.includes(desc)) {
+            predefTasks.push(desc);
+            predefTasks.sort();
+            set(predefTasksRef, predefTasks);
+        }
+        
+        // Agregar directamente al avión actual
+        addPredefToAvion(desc);
+        input.value = '';
+    }
+
+    function addExistingPredef(index) {
+        const desc = predefTasks[index];
+        addPredefToAvion(desc);
+    }
+
+    function addPredefToAvion(desc) {
+        const avion = avionesData.find(a => a.id == editCurrentAvionId);
+        if (!avion.tareas) avion.tareas = [];
+        
+        avion.tareas.push({ 
+            id: Date.now(), 
+            desc: desc, 
+            tango: "", 
+            techs: "", 
+            done: false, 
+            priority: false, 
+            help: false, 
+            comment: "" 
+        });
+        saveData();
+        closeModal('predef-task-modal');
+    }
+
+    function removePredefTask(index) {
+        showConfirm(`¿CONFIRMAS ELIMINAR ESTA TAREA PREDEFINIDA DE LA BASE DE DATOS GLOBAL?`, () => {
+            predefTasks.splice(index, 1);
+            set(predefTasksRef, predefTasks);
+        });
+    }
+
     function openEditTaskModal(aId, tId) {
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         editCurrentAvionId = aId; editCurrentTaskId = tId;
@@ -1402,6 +1507,7 @@
         });
     }
 
+    // Exportar todas las funciones al entorno global
     Object.assign(window, {
         updateHeader, addTech, removeTech, removeAllTechs, toggleMode, clearAllData, logoutLeader,
         formatMatricula, autoFormatTango, handleTangoClick, closeModal,
@@ -1412,7 +1518,8 @@
         editAvionComment, editTaskComment, closeConfirmModal, closePromptModal,
         changeViewMode, applyLocalFilter, resetLocalFilter, handleTaskDescInput,
         formatTime, changeTurno,
-        openManageTechsModal, addGlobalTech, removeGlobalTech
+        openManageTechsModal, addGlobalTech, removeGlobalTech,
+        openPredefModal, createAndAddPredef, addExistingPredef, removePredefTask // Se exportan las nuevas funciones
     });
 
 </script>
