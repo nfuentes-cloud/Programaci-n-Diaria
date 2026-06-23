@@ -43,7 +43,7 @@
         .top-bar {
             display: flex; justify-content: space-between; margin-bottom: 15px;
             background-color: var(--light-gray); padding: 10px 15px;
-            border-radius: 16px 0 16px 0; align-items: center;
+            border-radius: 16px 0 16px 0; align-items: center; position: relative;
         }
 
         .top-bar-left { display: flex; gap: 10px; }
@@ -53,6 +53,7 @@
             display: flex; gap: 8px; font-size: 11px; font-weight: normal;
             background: white; padding: 0 12px; border-radius: 4px; border: 1px solid var(--border);
             align-items: center; justify-content: center; height: 28px; box-sizing: border-box;
+            position: absolute; left: 50%; transform: translateX(-50%);
         }
 
         .btn-top {
@@ -243,6 +244,11 @@
             border-radius: 4px; border: 1px solid var(--border);
             background: #ffffff; color: var(--primary); gap: 4px;
         }
+        .btn-action-small { 
+            background-color: var(--light-gray); color: var(--primary); border: 1px solid var(--border); 
+            height: 24px; font-size: 9px; padding: 0 8px; border-radius: 4px;
+        }
+        .btn-action-small:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
 
         .action-btn:hover { background: var(--light-gray); border-color: #9E8FB5; }
         .action-btn.active-atencion { background: var(--help); color: white; border-color: var(--help); }
@@ -294,7 +300,7 @@
             .top-bar { flex-direction: column; gap: 8px; }
             .top-bar-left { width: 100%; flex-direction: column; }
             .btn-top { width: 100%; }
-            .live-clock { width: 100%; justify-content: center; height: auto; padding: 6px; }
+            .live-clock { width: 100%; justify-content: center; height: auto; padding: 6px; position: static; transform: none; }
             
             .view-controls { flex-direction: column; align-items: stretch; gap: 10px; }
             .view-controls > div { display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
@@ -388,10 +394,11 @@
     <div class="top-bar no-print">
         <div class="top-bar-left">
             <button type="button" id="btn-mode-toggle" class="btn-accent btn-top" onclick="toggleMode()">MODO TÉCNICO</button>
-            <button type="button" id="btn-logout" class="btn-top btn-danger-outline" onclick="logoutLeader()" style="display:none; background-color: var(--danger); color:white; border:none;">CERRAR SESIÓN</button>
+            <span id="logged-user" class="leader-only" style="font-size: 10px; font-weight: bold; color: var(--primary); border: 1px solid var(--primary); padding: 0 10px; border-radius: 4px; background: #e0f2fe; display: none; align-items: center; height: 28px; box-sizing: border-box; margin: 0;"></span>
+            <button type="button" id="btn-logout" class="btn-danger-outline" onclick="logoutLeader()" style="display:none;">✖</button>
         </div>
         <div id="live-clock" class="live-clock"></div>
-        <button class="btn-top" onclick="window.print()" style="background-color: #64748b; color:white;">🖨️ IMPRIMIR HOJA</button>
+        <button class="btn-outline" onclick="window.print()" title="Imprimir">🖨️</button>
     </div>
 
     <div class="view-controls no-print">
@@ -804,12 +811,20 @@
         myEmail = localStorage.getItem('tl_email') || '';
         document.body.classList.add('team-leader-mode');
         
+        const userEmail = localStorage.getItem('tl_email') || '';
+        const userAlias = userEmail.split('@')[0].toUpperCase();
+        
         const btnToggle = document.getElementById('btn-mode-toggle');
-        btnToggle.innerText = "MODO TEAM LEADER";
-        btnToggle.style.backgroundColor = "var(--leader-color)";
+        btnToggle.innerText = `👤 ${userAlias}`;
+        btnToggle.style.background = "#e0f2fe";
+        btnToggle.style.color = "var(--primary)";
+        btnToggle.style.border = "1px solid var(--primary)";
         
         const btnLogout = document.getElementById('btn-logout');
-        if (btnLogout) btnLogout.style.display = 'flex';
+        if (btnLogout) btnLogout.style.display = 'inline-flex';
+        
+        const loggedUserSpan = document.getElementById('logged-user');
+        if (loggedUserSpan) loggedUserSpan.style.display = 'none';
         
         updateLockUI();
         render();
@@ -822,10 +837,15 @@
         
         const btnToggle = document.getElementById('btn-mode-toggle');
         btnToggle.innerText = "MODO TÉCNICO";
-        btnToggle.style.backgroundColor = "var(--primary)";
+        btnToggle.style.background = "";
+        btnToggle.style.color = "";
+        btnToggle.style.border = "";
         
         const btnLogout = document.getElementById('btn-logout');
         if (btnLogout) btnLogout.style.display = 'none';
+        
+        const loggedUserSpan = document.getElementById('logged-user');
+        if (loggedUserSpan) loggedUserSpan.style.display = 'none';
         
         updateLockUI();
         render();
@@ -1431,7 +1451,7 @@
                     avionActionBtns = `
                         <button class="action-btn hide-from-leader" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
                         <div class="leader-only leader-wrapper">
-                            <button class="action-btn" onclick="openEditAvionModal(${avion.id})">🕒 EDITAR HORA</button>
+                            <button class="action-btn btn-action-small" onclick="openEditAvionModal(${avion.id})">🕒 EDITAR HORA</button>
                         </div>
                     `;
                 } else {
@@ -1440,7 +1460,7 @@
                         <div class="leader-only leader-wrapper">
                             <button class="action-btn btn-highlight" onclick="openAddTaskModal(${avion.id})">➕ TAREA</button>
                             <button class="action-btn btn-highlight" onclick="openPredefModal(${avion.id})" style="background-color: #ffffff; border-color: #cbd5e0;" title="Agregar Tareas Predefinidas / Preventivas">📑 PREDEF.</button>
-                            <button class="action-btn" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR</button>
+                            <button class="action-btn btn-action-small" onclick="openEditAvionModal(${avion.id})">✏️ EDITAR</button>
                         </div>
                     `;
                 }
