@@ -191,9 +191,9 @@
             padding: 3px 8px; border-radius: 4px; font-size: 0.85em; 
         }
         
-        .avion-comment { width: 100%; font-size: 0.85em; color: #C4B8D0; margin-top: 5px; font-weight: normal; font-style: italic; }
+        .avion-comment { width: 100%; font-size: 0.85em; color: #C4B8D0; font-weight: normal; font-style: italic; }
 
-        .tango-link { color: #F4729E; text-decoration: underline; cursor: pointer; font-weight: bold; transition: color 0.2s; }
+        .tango-link { color: #F4729E; cursor: pointer; font-weight: bold; transition: color 0.2s; }
         .tango-link:hover { color: white; }
         .task-item .tango-link { color: #EE1750; font-weight: 700; }
         .task-item .tango-link:hover { color: #B8123E; }
@@ -353,7 +353,7 @@
             .status-toggle { position: absolute; left: 8px; top: 10px; margin: 0; }
             .task-main { flex-direction: column; align-items: stretch; gap: 10px; }
             
-            .action-bar { display: grid; grid-template-columns: 1fr 1fr; width: 100%; gap: 6px; }
+            .action-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); width: 100%; gap: 6px; }
             .action-bar .action-btn { width: 100%; box-sizing: border-box; }
             .leader-wrapper { display: contents; } 
             
@@ -393,11 +393,11 @@
             }
             .avion-title.activity-header { background: var(--gradient-accent) !important; }
             .avion-pos, .avion-times { background: rgba(255,255,255,0.2); color: white; padding: 3px 8px; font-weight: bold; font-size: 0.9em; border-radius: 4px; }
-            .avion-comment { color: #C4B8D0; margin-top: 5px; font-size: 0.85em; }
+            .avion-comment { color: #C4B8D0; font-size: 0.85em; }
             .avion-info-main { flex-direction: row !important; align-items: center !important; justify-content: flex-start !important; gap: 8px !important; }
-            .tango-link { color: #F4729E; text-decoration: underline; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .avion-title .tango-link { color: #F4729E; text-decoration: underline; }
-            .task-item .tango-link { color: #EE1750; text-decoration: underline; }
+            .tango-link { color: #F4729E; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .avion-title .tango-link { color: #F4729E; }
+            .task-item .tango-link { color: #EE1750; }
             
             .task-container { padding-left: 0 !important; }
             .task-item { padding: 6px 10px !important; position: static !important; border-bottom: 1px solid var(--border); page-break-inside: avoid; }
@@ -1493,10 +1493,10 @@
 
         displayData.forEach(avion => {
             const div = document.createElement('div'); div.className = 'avion-section';
-            const wpDisplay = avion.wp ? `<span class="tango-link" onclick="handleTangoClick('${avion.wp}')">(${avion.wp})</span>` : '';
+            const wpDisplay = avion.wp ? `<span class="tango-link" onclick="handleTangoClick('${avion.wp}')">[${avion.wp}]</span>` : '';
             const posDisplay = avion.pos ? `<span class="avion-pos">POS: ${avion.pos}</span>` : '';
             // Se actualizó para mostrar un formato mucho más explícito y sin malentendidos
-            const timesDisplay = (avion.start || avion.end) ? `<span class="avion-times">🕒 ${avion.start || '--:--'} - ${avion.end || '--:--'}</span>` : '';
+            const timesDisplay = (avion.start || avion.end) ? `<span class="avion-times">${avion.start || '--:--'} - ${avion.end || '--:--'}</span>` : '';
             
             const headerClass = avion.isActivity ? 'activity-header' : '';
             
