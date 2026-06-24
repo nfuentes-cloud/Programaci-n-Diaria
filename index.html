@@ -41,8 +41,8 @@
 
         /* Barra superior general */
         .top-bar {
-            display: flex; justify-content: space-between; margin-bottom: 15px;
-            background-color: var(--light-gray); padding: 10px 15px;
+            display: flex; justify-content: space-between; margin-bottom: 10px;
+            background-color: var(--light-gray); padding: 6px 15px;
             border-radius: 16px 0 16px 0; align-items: center; position: relative;
         }
 
@@ -50,9 +50,9 @@
 
         /* Reloj Inteligente (Mejorado) */
         .live-clock {
-            display: flex; gap: 8px; font-size: 11px; font-weight: normal;
-            background: white; padding: 0 12px; border-radius: 4px; border: 1px solid var(--border);
-            align-items: center; justify-content: center; height: 28px; box-sizing: border-box;
+            display: flex; gap: 12px; font-size: 11px; font-weight: normal;
+            background: white; padding: 0 24px; border-radius: 6px; border: 1px solid var(--border);
+            align-items: center; justify-content: center; height: 36px; box-sizing: border-box;
         }
 
         .btn-top {
@@ -70,7 +70,7 @@
 
         /* Controles de vista y filtros locales */
         .view-controls {
-            display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; 
+            display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; 
             background: #ffffff; padding: 10px 15px; border-radius: 16px 0 16px 0; 
             border: 1px solid var(--border); align-items: center; justify-content: space-between;
         }
@@ -79,7 +79,7 @@
         .header-controls {
             background-color: var(--light-gray); border: 1px solid var(--border);
             border-left: 6px solid var(--leader-color); padding: 16px;
-            border-radius: 16px 0 16px 0; margin-bottom: 25px; transition: opacity 0.3s;
+            border-radius: 16px 0 16px 0; margin-bottom: 10px; transition: opacity 0.3s;
         }
 
         .leader-panel-header {
@@ -156,7 +156,7 @@
         .main-header-wrapper {
             position: relative;
             display: flex; align-items: center; justify-content: center;
-            margin-bottom: 20px; padding-bottom: 12px;
+            margin-bottom: 15px; padding: 10px 0;
             min-height: 40px;
             background: linear-gradient(90deg, var(--primary), var(--accent), var(--cyan)) no-repeat bottom / 100% 3px;
             -webkit-print-color-adjust: exact; print-color-adjust: exact;
@@ -174,7 +174,7 @@
             padding: 0 110px; box-sizing: border-box;
         }
         
-        .avion-section { margin-bottom: 20px; border-radius: 20px 0 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.05); }
+        .avion-section { margin-bottom: 15px; border-radius: 20px 0 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.05); }
 
         .avion-title {
             font-size: 1.05em; font-weight: bold; display: flex; align-items: center; justify-content: space-between;
@@ -212,9 +212,12 @@
         .task-item:last-child { border-bottom: none; border-radius: 0 0 20px 0; }
         .task-item:nth-child(even) { background-color: var(--light-gray); }
 
-        .task-item.atencion { background-color: #FFFDE6; border-left: 4px solid var(--help); }
+        .task-item.alerta-tl { background-color: #FFEBEE; border-left: 4px solid #D32F2F; }
+        .task-item.alerta-tech { background-color: #FFF3E0; border-left: 4px solid #F57C00; }
 
-        .atencion-badge { color: var(--primary); font-weight: 800; font-size: 0.8em; margin-left: 6px; background: rgba(255, 153, 0, 0.15); padding: 2px 6px; border-radius: 4px;}
+        .atencion-badge { font-weight: 800; font-size: 0.8em; margin-left: 6px; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+        .alerta-tl { color: #fff; background: #D32F2F; border: 1px solid #B71C1C; }
+        .alerta-tech { color: #fff; background: #F57C00; border: 1px solid #E65100; }
 
         .status-toggle {
             width: 20px; height: 20px; min-width: 20px; min-height: 20px;
@@ -256,7 +259,8 @@
         .btn-action-small:hover { background-color: var(--primary); color: white; border-color: var(--primary); }
 
         .action-btn:hover { background: var(--light-gray); border-color: #9E8FB5; }
-        .action-btn.active-atencion { background: var(--help); color: white; border-color: var(--help); }
+        .action-btn.active-alerta-tl { background: #D32F2F; color: white; border-color: #B71C1C; }
+        .action-btn.active-alerta-tech { background: #F57C00; color: white; border-color: #E65100; }
         .btn-highlight { color: var(--primary); border-color: var(--primary); background-color: #EDE6F5; }
         .btn-highlight:hover { background-color: var(--primary); color: white; }
 
@@ -337,7 +341,7 @@
             .btn-shift .btn-ico { font-size: 11px; line-height: 1; }
             .btn-shift .btn-lbl { font-size: 7px; line-height: 1.15; white-space: normal !important; }
             
-            .main-header-wrapper { flex-direction: column; text-align: center; gap: 12px; padding-bottom: 15px; }
+            .main-header-wrapper { flex-direction: column; text-align: center; gap: 12px; padding: 15px 0; }
             .logo-container { position: relative; transform: none; top: auto; left: auto; }
             .document-header { padding: 0; }
             
@@ -398,7 +402,8 @@
             .task-container { padding-left: 0 !important; }
             .task-item { padding: 6px 10px !important; position: static !important; border-bottom: 1px solid var(--border); page-break-inside: avoid; }
             .task-item:nth-child(even) { background-color: var(--light-gray); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .task-item.atencion { border-left: 3px solid var(--help) !important; background-color: #FFFDE6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .task-item.alerta-tl { border-left: 3px solid #D32F2F !important; background-color: #FFEBEE !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .task-item.alerta-tech { border-left: 3px solid #F57C00 !important; background-color: #FFF3E0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             
             .task-item.completed .task-info { opacity: 0.85 !important; text-decoration: line-through; color: #333; }
             .task-item.completed .tango-link { text-decoration: line-through; color: var(--comment); }
@@ -500,7 +505,7 @@
         
         <div id="aviones-container"></div>
         
-        <div id="leader-add-buttons" class="leader-only no-print" style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap;">
+        <div id="leader-add-buttons" class="leader-only no-print" style="margin-top: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
             <button class="btn-leader" onclick="openAddAvionModal()" style="flex: 1; min-width: 200px; padding: 12px; font-size: 11px; border-radius: 6px; height: auto;">+ AGREGAR AVIÓN</button>
             <button class="btn-accent" onclick="openAddActivityModal()" style="flex: 1; min-width: 200px; padding: 12px; font-size: 11px; border-radius: 6px; height: auto;">⭐ AGREGAR ACTIVIDAD EXTRA</button>
         </div>
@@ -1084,7 +1089,11 @@
         confirmCallback = callback;
         document.getElementById('confirm-modal').style.display = 'block';
     }
-    function closeConfirmModal() { document.getElementById('confirm-modal').style.display = 'none'; confirmCallback = null; }
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal').style.display = 'none';
+        document.getElementById('confirm-yes-btn').innerText = 'CONFIRMAR';
+        confirmCallback = null;
+    }
     document.getElementById('confirm-yes-btn').onclick = function() { if(confirmCallback) confirmCallback(); closeConfirmModal(); };
 
     let promptCallback = null;
@@ -1096,7 +1105,12 @@
         document.getElementById('prompt-modal').style.display = 'block';
         setTimeout(() => input.focus(), 50);
     }
-    function closePromptModal() { document.getElementById('prompt-modal').style.display = 'none'; promptCallback = null; }
+    function closePromptModal() {
+        document.getElementById('prompt-modal').style.display = 'none';
+        document.getElementById('prompt-input').placeholder = 'Escribe aquí... (Dejar en blanco para borrar)';
+        document.getElementById('prompt-save-btn').innerText = 'GUARDAR NOTA';
+        promptCallback = null;
+    }
     document.getElementById('prompt-save-btn').onclick = function() {
         if(promptCallback) promptCallback(document.getElementById('prompt-input').value.trim().toUpperCase());
         closePromptModal();
@@ -1323,7 +1337,7 @@
             tangoDisplay = ` <span class="tango-link" onclick="handleTangoClick('${t.tango}')">[${t.tango}]</span>`;
         }
 
-        const atencionLabel = t.atencion ? '<span class="atencion-badge">⚠️ ATENCIÓN</span>' : '';
+        const atencionLabel = t.atencion ? `<span class="atencion-badge ${t.alertaByTL ? 'alerta-tl' : 'alerta-tech'}">⚠️ ${t.alerta || 'ALERTA'}</span>` : '';
         const planePrefix = showPlaneReg ? `<strong style="color:var(--accent);">[${avion.reg}]</strong> ` : '';
         
         const locked = isShiftLockedForMe();
@@ -1333,8 +1347,7 @@
         let actionButtonsHtml = '';
         if (!locked) {
             actionButtonsHtml = `
-                <button class="action-btn ${t.atencion ? 'active-atencion' : ''}" onclick="toggleAtencion(${avion.id}, ${t.id})">⚠️ ATENCIÓN</button>
-                <button class="action-btn hide-from-leader" onclick="editTaskComment(${avion.id}, ${t.id})">💬 NOTA</button>
+                <button class="action-btn ${t.atencion ? (t.alertaByTL ? 'active-alerta-tl' : 'active-alerta-tech') : ''}" onclick="toggleAtencion(${avion.id}, ${t.id})">⚠️</button>
                 <div class="leader-only leader-wrapper">
                     <button class="action-btn" onclick="openEditTaskModal(${avion.id}, ${t.id})">✏️ EDITAR</button>
                 </div>
@@ -1342,7 +1355,7 @@
         }
 
         return `
-            <div class="task-item ${t.done ? 'completed' : ''} ${t.atencion ? 'atencion' : ''}">
+            <div class="task-item ${t.done ? 'completed' : ''} ${t.atencion ? (t.alertaByTL ? 'alerta-tl' : 'alerta-tech') : ''}">
                 <div class="status-toggle no-print" ${toggleClick} style="${toggleCursor}">✓</div>
                 <div class="task-main">
                     <div class="task-info">
@@ -1489,14 +1502,12 @@
             if (!locked) {
                 if (avion.isActivity) {
                     avionActionBtns = `
-                        <button class="action-btn hide-from-leader" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
                         <div class="leader-only leader-wrapper">
                             <button class="action-btn btn-action-small" onclick="openEditAvionModal(${avion.id})">🕒 EDITAR HORA</button>
                         </div>
                     `;
                 } else {
                     avionActionBtns = `
-                        <button class="action-btn hide-from-leader" onclick="editAvionComment(${avion.id})">💬 NOTA</button>
                         <div class="leader-only leader-wrapper">
                             <button class="action-btn btn-highlight" onclick="openAddTaskModal(${avion.id})">➕ TAREA</button>
                             <button class="action-btn btn-highlight" onclick="openPredefModal(${avion.id})" style="background-color: #ffffff; border-color: #cbd5e0;" title="Agregar Tareas Predefinidas / Preventivas">📑 PREDEF.</button>
@@ -1549,8 +1560,25 @@
         if(checkLock()) return;
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         if (tarea.done) return showConfirm("LA TAREA ESTÁ COMPLETADA.", null);
-        const accion = tarea.atencion ? "DESACTIVAR" : "ACTIVAR";
-        showConfirm(`¿CONFIRMAS ${accion} EL ESTADO DE ATENCIÓN?`, () => { tarea.atencion = !tarea.atencion; saveData(); });
+        if (tarea.atencion) {
+            showConfirm("¿DESACTIVAR ALERTA?", () => { tarea.atencion = false; saveData(); });
+        } else {
+            showAlertaPrompt(aId, tId);
+        }
+    }
+
+    function showAlertaPrompt(aId, tId) {
+        const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
+        document.getElementById('prompt-save-btn').innerText = 'ACTIVAR ALERTA';
+        document.getElementById('prompt-input').placeholder = 'Ej: APOYO, URGENTE, PRECAUCIÓN...';
+        showPromptModal("DEFINIR ALERTA", "", (val) => {
+            if (!val) {
+                document.getElementById('confirm-yes-btn').innerText = 'VOLVER';
+                showConfirm("DEBES INGRESAR UN TEXTO.", () => { showAlertaPrompt(aId, tId); });
+                return;
+            }
+            tarea.atencion = true; tarea.alerta = val; tarea.alertaByTL = isTeamLeader; saveData();
+        });
     }
 
     function openAddAvionModal() {
