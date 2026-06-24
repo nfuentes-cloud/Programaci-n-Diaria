@@ -320,15 +320,15 @@
             .control-group input[type="text"], 
             .control-group input[list] { flex: 1 !important; min-width: 100px !important; width: auto !important; }
             .control-group button { width: auto !important; flex: 1; min-width: 0; margin: 0 !important; }
-            .btn-agregar { flex: 0 1 auto; max-width: 85px; height: auto; padding: 4px 6px !important; white-space: normal; display: inline-flex; align-items: center; gap: 2px; }
+            .btn-agregar { flex: 0 1 auto; max-width: 76px; height: auto; padding: 4px 6px !important; white-space: normal; display: inline-flex; align-items: center; gap: 2px; }
             .btn-agregar .btn-ico { font-size: 11px; line-height: 1; }
             .btn-agregar .btn-lbl { font-size: 8px; line-height: 1.15; white-space: normal !important; }
-            .btn-listado { flex: 0 1 auto; max-width: 85px; height: auto; padding: 4px 6px !important; white-space: normal; display: inline-flex; align-items: center; gap: 2px; }
+            .btn-listado { flex: 0 1 auto; max-width: 76px; height: auto; padding: 4px 6px !important; white-space: normal; display: inline-flex; align-items: center; gap: 2px; }
             .btn-listado .btn-ico { font-size: 11px; line-height: 1; }
             .btn-listado .btn-lbl { font-size: 7px; line-height: 1.15; white-space: normal !important; }
             .hide-mobile { display: none !important; }
             .hide-desktop { display: flex !important; }
-            .btn-shift { flex: 0 1 auto; max-width: 80px; height: auto; padding: 4px 4px !important; white-space: normal; display: inline-flex; align-items: center; gap: 1px; }
+            .btn-shift { flex: 0 1 auto; max-width: 76px; height: auto; padding: 4px 4px !important; white-space: normal; display: inline-flex; align-items: center; gap: 1px; }
             .btn-shift .btn-ico { font-size: 10px; line-height: 1; }
             .btn-shift .btn-lbl { font-size: 7px; line-height: 1.15; white-space: normal !important; }
             
@@ -350,6 +350,11 @@
             
             .modal-content { width: 92%; padding: 16px; margin: 10% auto; }
             .modal-row { flex-direction: row; gap: 10px; } 
+        }
+
+                /* Ancho uniforme para botones de acción en desktop */
+        @media (min-width: 601px) {
+            .btn-shift, .btn-agregar, .btn-listado { min-width: 150px; }
         }
 
         /* Ultra-Comprimido para Imprimir en una sola hoja carta (va DESPUÉS del móvil para que la impresión siempre gane) */
@@ -453,27 +458,21 @@
     <div class="header-controls leader-only no-print">
         <div class="leader-panel-header">
             <div class="leader-title">⚙️ PANEL DE CONTROL TEAM LEADER</div>
-            <div class="hide-mobile" style="display: flex; gap: 10px;">
-                <button id="btn-lock-shift" class="btn-danger-outline btn-shift" onclick="toggleLockShift()" style="padding: 0 10px; font-size: 9px; display: none;"><span class="btn-ico">🔒</span><span class="btn-lbl">CERRAR TURNO</span></button>
-                <button class="btn-danger-outline btn-shift" onclick="openManageShiftModal()" style="padding: 0 10px; font-size: 9px;"><span class="btn-ico">⚠️</span><span class="btn-lbl">GESTIONAR TURNO</span></button>
-            </div>
         </div>
 
         <div class="leader-grid" id="leader-controls-grid">
             <div class="control-group">
                 <span style="font-size: 10px; font-weight: bold; color: var(--primary); width: 65px;">TEAM LEADER:</span>
                 <input type="text" id="in-jefe" placeholder="NOMBRE DEL TEAM LEADER" oninput="updateHeader()">
-                <div class="shift-mobile-btns hide-desktop" style="display:flex; gap:4px;">
-                    <button id="btn-lock-shift-mobile" class="btn-danger-outline btn-shift" onclick="toggleLockShift()" style="padding: 0 6px; font-size:8px; display:none;"><span class="btn-ico">🔒</span><span class="btn-lbl">CERRAR TURNO</span></button>
-                    <button class="btn-danger-outline btn-shift" onclick="openManageShiftModal()" style="padding: 0 6px; font-size:8px;"><span class="btn-ico">⚠️</span><span class="btn-lbl">GESTIONAR TURNO</span></button>
-                </div>
+                <button id="btn-lock-shift-mobile" class="btn-outline btn-shift" onclick="toggleLockShift()" style="padding: 0 10px; display:none; align-items:center; gap:2px;"><span class="btn-ico">🔒</span><span class="btn-lbl">CERRAR TURNO</span></button>
+                <button class="btn-outline btn-shift" onclick="openManageShiftModal()" style="padding: 0 10px; display:inline-flex; align-items:center; gap:2px;"><span class="btn-ico">⚠️</span><span class="btn-lbl">GESTIONAR TURNO</span></button>
             </div>
             
             <div class="control-group" style="margin-bottom: 5px;">
                 <span style="font-size: 10px; font-weight: bold; color: var(--primary); width: 65px;">TÉCNICOS:</span>
                 <input type="text" id="in-new-tech" placeholder="ESCRIBE PARA BUSCAR..." list="global-techs-list" onkeypress="if(event.key === 'Enter') addTech()" onchange="addTech()">
                 <button class="btn-leader btn-agregar" onclick="addTech()" style="padding: 0 10px; display:inline-flex; align-items:center; gap:2px;"><span class="btn-ico">+</span><span class="btn-lbl">AGREGAR AL TURNO</span></button>
-                <button class="btn-outline btn-listado" onclick="openManageTechsModal()" style="padding: 0 10px; font-size: 9px;" title="Editar Base Global de Técnicos"><span class="btn-ico">👥</span><span class="btn-lbl">LISTADO DE TECNICOS</span></button>
+                <button class="btn-outline btn-listado" onclick="openManageTechsModal()" style="padding: 0 10px; font-size: 9px; display:inline-flex; align-items:center; gap:2px;" title="Editar Base Global de Técnicos"><span class="btn-ico">👥</span><span class="btn-lbl">LISTADO DE TECNICOS</span></button>
             </div>
 
             <div id="tech-pills-container"></div>
