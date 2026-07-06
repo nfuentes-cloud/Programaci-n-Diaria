@@ -721,6 +721,9 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+    
+    // 1. NUEVA LÍNEA: Importamos las herramientas del "Pase temporal" (Autenticación)
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyADC1Wwcypek8g1gwOTcgqKskpqiTo0-oM",
@@ -734,6 +737,16 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    // 2. NUEVAS LÍNEAS: Pedimos el pase temporal de forma invisible al cargar la página
+    const auth = getAuth(app);
+    signInAnonymously(auth)
+      .then(() => {
+          console.log("Conectado a la Base de Datos de forma segura 🔒");
+      })
+      .catch((error) => {
+          console.error("Error al obtener el pase de Firebase:", error);
+      });
 
     const correosAutorizados = [
         "ndfuentesa@gmail.com",
