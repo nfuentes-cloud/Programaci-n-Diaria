@@ -749,15 +749,19 @@
       });
 
     const correosAutorizados = [
-        "ndfuentesa@gmail.com",
-        "nelson.fuentes@latam.com",
-        "hector.vargas@latam.com",
-        "richard.schenk@latam.com",
-        "pablo.monti@latam.com",
-        "marco.santelices@latam.com",
-        "pamela.perezs@latam.com",
-        "mauricio.munozv@latam.com"
+        "ndfuentesa",
+        "nelson.fuentes",
+        "hector.vargas",
+        "richard.schenk",
+        "pablo.monti",
+        "marco.santelices",
+        "pamela.perezs",
+        "mauricio.munozv"
     ];
+
+    function extractUsername(email) {
+        return email.trim().toLowerCase().split('@')[0];
+    }
 
     let dbRefs = {};
     let unsubAviones, unsubTechs, unsubHeader;
@@ -865,8 +869,7 @@
         myEmail = localStorage.getItem('tl_email') || '';
         document.body.classList.add('team-leader-mode');
         
-        const userEmail = localStorage.getItem('tl_email') || '';
-        const userAlias = userEmail.split('@')[0].toUpperCase();
+        const userAlias = myEmail.toUpperCase();
         
         const btnToggle = document.getElementById('btn-mode-toggle');
         btnToggle.innerText = `👤 ${userAlias}`;
@@ -920,14 +923,14 @@
                 const email = prompt("🔒 ACCESO TEAM LEADER\nIngrese su correo corporativo autorizado:");
                 if (!email) return; 
 
-                const emailLower = email.trim().toLowerCase();
+                const username = extractUsername(email);
                 
-                if (correosAutorizados.includes(emailLower)) {
-                    localStorage.setItem('tl_email', emailLower);
+                if (correosAutorizados.includes(username)) {
+                    localStorage.setItem('tl_email', username);
                     localStorage.setItem('tl_login_time', Date.now().toString());
                     activateLeaderUI();
                 } else {
-                    showConfirm(`ACCESO DENEGADO.\nEl correo ${emailLower} no está autorizado.`, null);
+                    showConfirm(`ACCESO DENEGADO.\n${email.trim().toLowerCase()} no está autorizado.`, null);
                 }
             }
         }
