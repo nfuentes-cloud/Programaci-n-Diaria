@@ -748,16 +748,14 @@
           console.error("Error al obtener el pase de Firebase:", error);
       });
 
-    const correosAutorizados = [
-        "ndfuentesa",
-        "nelson.fuentes",
-        "hector.vargas",
-        "richard.schenk",
-        "pablo.monti",
-        "marco.santelices",
-        "pamela.perezs",
-        "mauricio.munozv"
-    ];
+    let correosAutorizados = [];
+
+    const tlAuthRef = ref(db, 'mantenimiento/tl_autorizados');
+    onValue(tlAuthRef, (snapshot) => {
+        const data = snapshot.val();
+        correosAutorizados = data || [];
+        checkSession();
+    });
 
     function extractUsername(email) {
         return email.trim().toLowerCase().split('@')[0];
@@ -846,8 +844,6 @@
         predefTasks = snapshot.val() || [];
         updatePredefTasksUI();
     });
-
-    checkSession();
 
     function checkSession() {
         const savedEmail = localStorage.getItem('tl_email');
