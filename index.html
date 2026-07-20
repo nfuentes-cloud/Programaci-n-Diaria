@@ -179,7 +179,7 @@
         .avion-title {
             font-size: 1.05em; font-weight: bold; display: flex; align-items: center; justify-content: space-between;
             background: var(--gradient-primary); color: white; padding: 10px 14px; border-radius: 20px 0 0 0; 
-            flex-wrap: wrap; gap: 10px;
+            flex-wrap: wrap; gap: 10px; transition: filter 0.5s ease;
         }
         
         .avion-title.activity-header { background: var(--gradient-accent); }
@@ -208,7 +208,7 @@
 
         .task-item {
             display: flex; padding: 10px 14px; align-items: flex-start;
-            border-bottom: 1px solid var(--light-gray); transition: background-color 0.2s;
+            border-bottom: 1px solid var(--light-gray); transition: background-color 0.5s ease, opacity 0.5s ease;
             background-color: transparent;
         }
         
@@ -233,7 +233,7 @@
         .task-item.completed .action-bar { display: none !important; }
 
         .task-item.completed .status-toggle { background-color: #9ca3af; border-color: #9ca3af; color: white; }
-        .task-item.completed { border-left: none; opacity: 0.6; transition: all 0.3s ease; }
+        .task-item.completed { border-left: none; opacity: 0.6; }
         .task-item.completed:nth-child(even) { background-color: #f0f0f0; }
         .task-item.completed:nth-child(odd) { background-color: #ffffff; }
         
@@ -1007,8 +1007,38 @@
         updateTechFilterDropdown();
 
         unsubAviones = onValue(dbRefs.aviones, (snapshot) => {
+            const oldData = avionesData;
             avionesData = snapshot.val() || [];
             render();
+            // Detect remote changes and animate them
+            const animIds = [];
+            for (const newAvion of avionesData) {
+                const oldAvion = oldData.find(a => a.id === newAvion.id);
+                if (newAvion.tareas) {
+                    for (const t of newAvion.tareas) {
+                        const oldT = oldAvion?.tareas?.find(ot => ot.id === t.id);
+                        if (oldT && oldT.done !== t.done) {
+                            animIds.push(`${newAvion.id}:${t.id}`);
+                        }
+                    }
+                }
+            }
+            if (animIds.length > 0) {
+                setTimeout(() => {
+                    for (const id of animIds) {
+                        const [aId, tId] = id.split(':');
+                        const el = document.querySelector(`.task-item[data-avion-id="${aId}"][data-task-id="${tId}"]`);
+                        if (el) {
+                            el.style.backgroundColor = '#fca5a5';
+                            el.style.opacity = '1';
+                            setTimeout(() => {
+                                el.style.backgroundColor = '';
+                                el.style.opacity = '';
+                            }, 500);
+                        }
+                    }
+                }, 50);
+            }
         });
 
         unsubTechs = onValue(dbRefs.techs, (snapshot) => {
@@ -1384,7 +1414,7 @@
         }
 
         return `
-            <div class="task-item ${t.done ? 'completed' : ''} ${t.atencion ? (t.alertaByTL ? 'alerta-tl' : 'alerta-tech') : ''}">
+            <div class="task-item ${t.done ? 'completed' : ''} ${t.atencion ? (t.alertaByTL ? 'alerta-tl' : 'alerta-tech') : ''}" data-avion-id="${avion.id}" data-task-id="${t.id}">
                 <div class="status-toggle no-print" ${toggleClick} style="${toggleCursor}">✓</div>
                 <div class="task-main">
                     <div class="task-info">
@@ -1531,8 +1561,8 @@
             return;
         }
 
-        displayData.forEach(avion => {
-            const div = document.createElement('div'); div.className = 'avion-section';
+            displayData.forEach(avion => {
+            const div = document.createElement('div'); div.className = 'avion-section'; div.dataset.avionId = avion.id;
             const wpDisplay = avion.wp ? `<span class="tango-link" onclick="handleTangoClick('${avion.wp}')">[${avion.wp}]</span>` : '';
             const posDisplay = avion.pos ? `<span class="avion-pos">POS: ${avion.pos}</span>` : '';
             // Se actualizó para mostrar un formato mucho más explícito y sin malentendidos
@@ -1589,13 +1619,59 @@
         const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
         if (!tarea.done) {
             showConfirm("¿CONFIRMAS QUE ESTA TAREA ESTÁ COMPLETADA Y CERRADA?", () => {
-                tarea.atencion = false; tarea.done = true; saveData(); 
+                tarea.atencion = false; tarea.done = true;
+                animateComplete(aId, tId, avion);
             });
         } else {
             showConfirm("¿CONFIRMAS QUE DESEAS REABRIR ESTA TAREA?", () => {
-                tarea.done = false; saveData();
+                tarea.done = false;
+                animateReopen(aId, tId, avion);
             });
         }
+    }
+
+    function animateComplete(aId, tId, avion) {
+        const el = document.querySelector(`.task-item[data-avion-id="${aId}"][data-task-id="${tId}"]`);
+        let delay = 100;
+        if (el) {
+            el.style.backgroundColor = '#fca5a5';
+            el.style.opacity = '1';
+            el.classList.remove('completed');
+            setTimeout(() => {
+                el.style.backgroundColor = '';
+                el.style.opacity = '';
+                el.classList.add('completed');
+            }, 500);
+            delay = 1100;
+        }
+        const allDone = avion.tareas && avion.tareas.length > 0 && avion.tareas.every(t => t.done);
+        if (allDone) {
+            const section = document.querySelector(`.avion-section[data-avion-id="${aId}"]`);
+            if (section) {
+                const title = section.querySelector('.avion-title');
+                if (title) {
+                    title.style.filter = 'brightness(1.5) sepia(0.3) hue-rotate(-20deg)';
+                    setTimeout(() => { title.style.filter = ''; }, 500);
+                }
+            }
+        }
+        setTimeout(() => saveData(), delay);
+    }
+
+    function animateReopen(aId, tId, avion) {
+        const el = document.querySelector(`.task-item[data-avion-id="${aId}"][data-task-id="${tId}"]`);
+        let delay = 100;
+        if (el) {
+            el.style.backgroundColor = '#fca5a5';
+            el.style.opacity = '1';
+            setTimeout(() => {
+                el.classList.remove('completed');
+                el.style.backgroundColor = '';
+                el.style.opacity = '';
+            }, 500);
+            delay = 1100;
+        }
+        setTimeout(() => saveData(), delay);
     }
 
     function toggleAtencion(aId, tId) {
