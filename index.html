@@ -74,6 +74,7 @@
             background: #ffffff; padding: 10px 15px; border-radius: 16px 0 16px 0; 
             border: 1px solid var(--border); align-items: center; justify-content: space-between;
         }
+        .view-filters-wrap { flex: 1; min-width: 0; }
 
         /* PANEL DE CONTROL TEAM LEADER */
         .header-controls {
@@ -158,8 +159,29 @@
             display: flex; align-items: center; justify-content: center;
             margin-bottom: 15px; padding: 10px 0;
             min-height: 40px;
-            background: linear-gradient(90deg, var(--primary), var(--accent), var(--cyan)) no-repeat bottom / 100% 3px;
+            background: none;
             -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            overflow: hidden;
+        }
+        .main-header-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                var(--primary) 0%, 
+                var(--accent) 25%, 
+                var(--primary) 50%, 
+                var(--accent) 75%, 
+                var(--primary) 100%);
+            animation: headerSlide 1.5s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes headerSlide {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0); }
         }
         
         .logo-container {
@@ -292,19 +314,21 @@
         }
 
         .tech-checkbox-label {
+            display: inline-flex; cursor: pointer;
+        }
+        .tech-checkbox-label input { display: none; }
+        .tech-checkbox-label span {
             display: flex; align-items: center; justify-content: center;
             background: white; border: 1px solid var(--border); padding: 6px 12px;
-            border-radius: 20px; cursor: pointer; font-size: 10px; font-weight: 700;
+            border-radius: 20px; font-size: 10px; font-weight: 700;
             transition: all 0.2s; user-select: none; color: var(--comment); text-align: center;
+            word-wrap: break-word; white-space: normal; line-height: 1.2;
         }
-
-        .tech-checkbox-label:hover { border-color: var(--primary); color: var(--primary); background: var(--light-gray); }
-        .tech-checkbox-label:has(input:checked) { 
+        .tech-checkbox-label:hover span { border-color: var(--primary); color: var(--primary); background: var(--light-gray); }
+        .tech-checkbox-label input:checked + span { 
             border-color: var(--primary); background: var(--primary); color: white; 
             box-shadow: 0 2px 6px rgba(27, 0, 136, 0.2);
         }
-        .tech-checkbox-label input { display: none; }
-        .tech-checkbox-label span { word-wrap: break-word; white-space: normal; line-height: 1.2; }
 
         .modal-footer { display: flex; gap: 10px; margin-top: 5px; padding-top: 15px; border-top: 1px solid var(--border); }
         .btn-modal-action { flex: 1; padding: 0; height: 30px; font-size: 10px; border-radius: 4px;}
@@ -363,7 +387,6 @@
             
             .action-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); width: 100%; gap: 6px; }
             .action-bar .action-btn { width: 100%; box-sizing: border-box; }
-            .leader-wrapper { display: contents; } 
             
             .modal-content { width: 92%; padding: 16px; margin: 10% auto; }
             .modal-row { flex-direction: row; gap: 10px; } 
@@ -387,7 +410,8 @@
             body { padding: 0 !important; background-color: white; font-size: var(--print-font-size); line-height: 1.15; }
             .container { padding: 0 3px 0 0 !important; box-shadow: none; max-width: 100%; }
             
-            .main-header-wrapper { flex-direction: row !important; text-align: center !important; gap: normal !important; padding: 6px 0 8px 0 !important; margin-bottom: 8px; min-height: 36px; }
+            .main-header-wrapper { flex-direction: row !important; text-align: center !important; gap: normal !important; padding: 6px 0 8px 0 !important; margin-bottom: 8px; min-height: 36px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--cyan)) no-repeat bottom / 100% 3px !important; overflow: visible !important; }
+            .main-header-wrapper::after { display: none !important; }
             .logo-container img { height: 28px !important; width: auto !important; }
             .logo-container { position: absolute !important; left: 0 !important; top: 50% !important; transform: translateY(-50%) !important; }
             .document-header { font-size: 1.1em; padding: 0 85px !important; } 
@@ -464,7 +488,7 @@
             </select>
         </div>
         
-        <div class="view-filters-wrap" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <div class="view-filters-wrap" style="display:flex; gap:8px; align-items:center;">
             <div style="display: flex; gap: 8px; align-items: center;">
                 <span style="font-size: 10px; font-weight: bold; color: var(--comment);">ORGANIZAR POR:</span>
                 <select id="view-mode-select" onchange="changeViewMode()" style="min-width: 130px;">
@@ -809,6 +833,7 @@
     let viewingDate = getLogicalTodayDate();
     let shiftState = { estado: 'abierto', cerradoPor: '' };
     let myEmail = localStorage.getItem('tl_email') || '';
+    let localMutation = false;
 
     document.getElementById('global-turno-select').value = activeTurno;
     document.getElementById('view-mode-select').value = currentViewMode;
@@ -875,7 +900,6 @@
 
     function activateLeaderUI() {
         isTeamLeader = true;
-        myEmail = localStorage.getItem('tl_email') || '';
         document.body.classList.add('team-leader-mode');
         
         const userAlias = myEmail.toUpperCase();
@@ -1010,7 +1034,10 @@
             const oldData = avionesData;
             avionesData = snapshot.val() || [];
             render();
-            // Detect remote changes and animate them
+            if (localMutation) {
+                localMutation = false;
+                return;
+            }
             const animIds = [];
             for (const newAvion of avionesData) {
                 const oldAvion = oldData.find(a => a.id === newAvion.id);
@@ -1374,8 +1401,7 @@
 
     function autoFormatTango(input) {
         let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (val === 'T' || val === 'T0' || val === 'T00') {
-        } else if (val.length > 0 && !val.startsWith('T00')) {
+        if (val.length > 0 && !val.startsWith('T00')) {
             val = val.replace(/^T0?0?/, ''); val = 'T00' + val; 
         }
         input.value = val.substring(0, 8); 
@@ -1389,9 +1415,10 @@
     function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
     function generateTaskHTML(avion, t, showPlaneReg = false) {
-        let cleanDesc = t.desc; let tangoDisplay = '';
+        let cleanDesc = t.desc || ''; let tangoDisplay = '';
         if (t.tango) {
-            const regexClean = new RegExp(`\\[?${t.tango}\\]?`, 'gi');
+            const escapedTango = t.tango.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regexClean = new RegExp(`\\[?${escapedTango}\\]?`, 'gi');
             cleanDesc = cleanDesc.replace(regexClean, '').trim().replace(/[- ]+$/, '').trim();
             tangoDisplay = ` <span class="tango-link" onclick="handleTangoClick('${t.tango}')">[${t.tango}]</span>`;
         }
@@ -1655,7 +1682,10 @@
                 }
             }
         }
-        setTimeout(() => saveData(), delay);
+        setTimeout(() => {
+            localMutation = true;
+            saveData();
+        }, delay);
     }
 
     function animateReopen(aId, tId, avion) {
@@ -1671,7 +1701,10 @@
             }, 500);
             delay = 1100;
         }
-        setTimeout(() => saveData(), delay);
+        setTimeout(() => {
+            localMutation = true;
+            saveData();
+        }, delay);
     }
 
     function toggleAtencion(aId, tId) {
@@ -1690,27 +1723,21 @@
         document.getElementById('prompt-save-btn').innerText = 'ACTIVAR ALERTA';
         document.getElementById('prompt-input').placeholder = 'Ej: APOYO, URGENTE, PRECAUCIÓN...';
         showPromptModal("DEFINIR ALERTA", "", (val) => {
-            if (!val) {
-                document.getElementById('confirm-yes-btn').innerText = 'VOLVER';
-                showConfirm("DEBES INGRESAR UN TEXTO.", () => { showAlertaPrompt(aId, tId); });
-                return;
-            }
             if (isTeamLeader) {
                 tarea.atencion = true; tarea.alerta = val; tarea.alertaByTL = true; tarea.alertaNombre = ''; saveData();
             } else {
-                showNamePrompt(aId, tId, val);
+                showNamePrompt(aId, tId, val, tarea);
             }
         });
     }
 
-    function showNamePrompt(aId, tId, alertaVal) {
-        const avion = avionesData.find(a => a.id == aId); const tarea = avion.tareas.find(t => t.id == tId);
+    function showNamePrompt(aId, tId, alertaVal, tarea) {
         document.getElementById('prompt-save-btn').innerText = 'CONFIRMAR';
         document.getElementById('prompt-input').placeholder = 'Tu nombre...';
         showPromptModal("NOMBRE DEL TÉCNICO", "", (name) => {
             if (!name) {
                 document.getElementById('confirm-yes-btn').innerText = 'VOLVER';
-                showConfirm("DEBES INGRESAR TU NOMBRE.", () => { showNamePrompt(aId, tId, alertaVal); });
+                showConfirm("DEBES INGRESAR TU NOMBRE.", () => { showNamePrompt(aId, tId, alertaVal, tarea); });
                 return;
             }
             tarea.atencion = true; tarea.alerta = alertaVal; tarea.alertaNombre = name; tarea.alertaByTL = false; saveData();
@@ -1850,7 +1877,9 @@
     function openAddTaskModal(avionId) {
         if(checkLock()) return;
         editCurrentAvionId = avionId;
+        const avion = avionesData.find(a => a.id == avionId);
         document.getElementById('add-task-desc').value = ''; document.getElementById('add-task-tango').value = '';
+        document.getElementById('add-task-tango').style.display = avion?.isActivity ? 'none' : 'block';
         document.getElementById('add-task-comment').value = '';
         buildTechGrid('add-task-techs', ""); document.getElementById('add-task-modal').style.display = 'block';
     }
